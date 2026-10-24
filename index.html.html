@@ -55,6 +55,8 @@ select.proj{max-width:220px;padding:7px 8px;border:1px solid var(--rule);border-
 .toggle{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer}
 .toggle input{accent-color:var(--accent)}
 .credit{flex-basis:100%;text-align:right;font-size:14px;font-weight:700;color:var(--ink);letter-spacing:.01em;margin-top:-2px}
+.credit a{display:inline-flex;align-items:center;gap:6px;color:var(--accent);text-decoration:none;border:1px solid var(--accent);border-radius:999px;padding:3px 12px;margin-right:6px;font-size:13px}
+.credit a:hover{background:var(--accent);color:var(--accent-ink)}
 .layout{display:grid;grid-template-columns:220px minmax(0,1fr) 360px;gap:20px;margin-top:18px;align-items:start}
 nav.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 76px);display:flex;flex-direction:column;gap:2px}
 .phase{font-size:11px;letter-spacing:.08em;color:var(--muted);margin:12px 0 4px 8px;font-weight:600}
@@ -239,7 +241,7 @@ dialog::backdrop{background:rgba(10,14,22,.5)}
     <label class="btn" for="restoreIn" style="margin:0">복원</label><input type="file" id="restoreIn" accept=".json,application/json" hidden>
     <button class="btn ghost" id="delBtn" title="현재 설교 삭제">삭제</button>
   </div>
-  <div class="credit">비전AI교육연구소 Ph.D. 곽한영 대표</div>
+  <div class="credit"><a href="https://vision-ai-lab.vercel.app/" target="_blank" rel="noopener">비전AI교육연구소 ↗</a>Ph.D. 곽한영 대표</div>
 </header>
 <div id="confirmZone"></div>
 
