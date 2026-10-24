@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>파이퍼 설교 연구</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+html{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* Layout: 강단 원고대 — 왼쪽 공정 레일 · 가운데 따라 쓰는 작업면 · 오른쪽 코치/AI 연구실/연구 노트 */
+:root{
+  --paper:#EEF1F5; --sheet:#FFFFFF; --ink:#17202C; --muted:#5A6577; --rule:#D6DCE5;
+  --accent:#23408E; --accent-ink:#FFFFFF; --accent-soft:#E2E8F7;
+  --ai:#5B3FA6; --ai-soft:#ECE6F8; --ai-ink:#FFFFFF;
+  --mark:#F6DA4C; --mark-ink:#3A3000;
+  --ok:#24724A; --ok-soft:#DFF1E6; --warn:#9A6410; --warn-soft:#FBEFD6; --bad:#A83434; --bad-soft:#F7E1E1;
+  --f-display:"Gowun Batang","Nanum Myeongjo","AppleMyungjo",serif;
+  --f-ui:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0F131A; --sheet:#171D27; --ink:#E4E9F0; --muted:#97A2B3; --rule:#2A3342;
+  --accent:#93ABF2; --accent-ink:#0F1730; --accent-soft:#1F2A47;
+  --ai:#B7A2EE; --ai-soft:#2A2244; --ai-ink:#17102C;
+  --mark:#C8A928; --mark-ink:#1A1600;
+  --ok:#62C792; --ok-soft:#173326; --warn:#E3B15A; --warn-soft:#3A2D14; --bad:#E58383; --bad-soft:#3D1D1D; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0F131A; --sheet:#171D27; --ink:#E4E9F0; --muted:#97A2B3; --rule:#2A3342;
+  --accent:#93ABF2; --accent-ink:#0F1730; --accent-soft:#1F2A47;
+  --ai:#B7A2EE; --ai-soft:#2A2244; --ai-ink:#17102C;
+  --mark:#C8A928; --mark-ink:#1A1600;
+  --ok:#62C792; --ok-soft:#173326; --warn:#E3B15A; --warn-soft:#3A2D14; --bad:#E58383; --bad-soft:#3D1D1D; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{background:var(--paper);color:var(--ink)}
+body{font-family:var(--f-ui);font-size:15px;line-height:1.6;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+button,input,select,textarea{font:inherit;color:inherit}
+button:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding-block:12px}
+.brand{display:flex;align-items:baseline;gap:10px;margin-right:auto;flex-wrap:wrap}
+.brand h1{font-family:var(--f-display);font-size:22px;margin:0;letter-spacing:-.01em}
+.brand small{color:var(--muted);font-size:12px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+select.proj{max-width:220px;padding:7px 8px;border:1px solid var(--rule);border-radius:var(--r);background:var(--sheet)}
+.btn{border:1px solid var(--rule);background:var(--sheet);border-radius:var(--r);padding:7px 12px;cursor:pointer;font-size:14px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.aib{background:var(--ai);color:var(--ai-ink);border-color:var(--ai)}
+.btn.ghost{background:transparent}
+.btn.sm{padding:4px 9px;font-size:13px}
+.toggle{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer}
+.toggle input{accent-color:var(--accent)}
+.credit{flex-basis:100%;text-align:right;font-size:14px;font-weight:700;color:var(--ink);letter-spacing:.01em;margin-top:-2px}
+.layout{display:grid;grid-template-columns:220px minmax(0,1fr) 360px;gap:20px;margin-top:18px;align-items:start}
+nav.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 76px);display:flex;flex-direction:column;gap:2px}
+.phase{font-size:11px;letter-spacing:.08em;color:var(--muted);margin:12px 0 4px 8px;font-weight:600}
+.phase:first-child{margin-top:0}
+.step{display:grid;grid-template-columns:26px 1fr;gap:8px;align-items:center;text-align:left;border:0;background:transparent;padding:6px 8px;border-radius:var(--r);cursor:pointer;color:var(--ink)}
+.step:hover{background:var(--sheet)}
+.step.on{background:var(--sheet);box-shadow:inset 3px 0 0 var(--accent)}
+.dot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-mono);font-size:11px;border:1.5px solid var(--rule);color:var(--muted);background:var(--paper)}
+.dot.half{border-color:var(--warn);color:var(--warn)}
+.dot.full{background:var(--ok);border-color:var(--ok);color:var(--sheet)}
+.step span.t{font-size:14px;line-height:1.3}
+.progress{margin:14px 8px 0;font-size:12px;color:var(--muted)}
+.meter{height:6px;background:var(--rule);border-radius:3px;overflow:hidden;margin-top:6px}
+.meter i{display:block;height:100%;background:var(--accent)}
+main.work{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:26px 28px 30px;min-width:0}
+.eyebrow{font-family:var(--f-mono);font-size:12px;color:var(--accent);letter-spacing:.04em}
+.work h2{font-family:var(--f-display);font-size:28px;line-height:1.25;margin:4px 0 6px;text-wrap:balance}
+.lede{color:var(--muted);margin:0 0 14px;max-width:62ch}
+.todo{display:flex;flex-wrap:wrap;gap:8px 18px;background:var(--accent-soft);border-radius:8px;padding:10px 14px;margin:0 0 18px;font-size:14px}
+.todo b{font-weight:600;margin-right:4px}
+.todo ol{margin:0;padding-left:18px;display:flex;flex-wrap:wrap;gap:4px 22px}
+.welcome{border:1px dashed var(--accent);border-radius:10px;padding:14px 16px;margin-bottom:20px}
+.welcome h3{margin:0 0 6px;font-size:15px}
+.welcome ol{margin:0;padding-left:20px;font-size:14px}
+.welcome li{margin-bottom:3px}
+.passage{font-family:var(--f-display);font-size:17px;line-height:1.8;background:var(--paper);border-radius:var(--r);padding:12px 16px;margin:0 0 20px}
+.passage b{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-weight:500;display:block;margin-bottom:2px}
+.fields{display:flex;flex-direction:column;gap:22px}
+.field label.l,.field .l{display:block;font-weight:600;font-size:14.5px;margin-bottom:2px}
+.field .h{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
+.field input[type=text],.field input[type=number],.field textarea,.field select{width:100%;border:1px solid var(--rule);border-radius:var(--r);background:var(--sheet);padding:9px 11px;line-height:1.6}
+.field textarea{resize:vertical;min-height:70px}
+.field textarea.ms{font-family:var(--f-display);font-size:16px;line-height:1.85}
+.guide{display:flex;flex-direction:column;gap:6px;margin:0 0 8px}
+.how{font-size:13px;color:var(--ink);background:var(--paper);border-radius:6px;padding:6px 10px}
+.how b{color:var(--accent);font-weight:600;margin-right:4px}
+details.ex{border-left:3px solid var(--mark);padding:2px 0 2px 10px}
+details.ex summary{cursor:pointer;font-size:13px;color:var(--muted);list-style:none;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+details.ex summary::-webkit-details-marker{display:none}
+details.ex summary::before{content:"▸";font-size:11px}
+details.ex[open] summary::before{content:"▾"}
+.exbox{font-family:var(--f-display);font-size:14.5px;line-height:1.75;white-space:pre-wrap;margin:6px 0 4px;color:var(--ink)}
+.exacts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.airow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.aichip{border:1px solid var(--ai);color:var(--ai);background:var(--ai-soft);border-radius:999px;padding:3px 11px;font-size:12.5px;cursor:pointer}
+.aichip:hover{background:var(--ai);color:var(--ai-ink)}
+.noai{font-size:12.5px;color:var(--muted);font-style:normal}
+.cnt{font-family:var(--f-mono);font-size:12px;color:var(--muted);text-align:right;margin-top:3px;font-variant-numeric:tabular-nums}
+.cnt.over{color:var(--warn)}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.checks{display:flex;flex-direction:column;gap:6px}
+.checks label{display:flex;gap:8px;align-items:flex-start;font-size:14px;cursor:pointer}
+.checks input{margin-top:5px;accent-color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--rule);border-radius:999px;padding:4px 12px;font-size:13px;background:var(--sheet);cursor:pointer}
+.chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.card{border:1px solid var(--rule);border-radius:8px;padding:12px 14px;cursor:pointer;background:var(--sheet);text-align:left}
+.card.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.card strong{display:block;font-size:15px;margin-bottom:2px}
+.card span{font-size:13px;color:var(--muted)}
+.checkbox-results{display:flex;flex-direction:column;gap:6px;margin-top:22px;border-top:1px dashed var(--rule);padding-top:14px}
+.res{display:flex;gap:8px;font-size:14px;align-items:flex-start}
+.pill{flex:none;font-family:var(--f-mono);font-size:11px;border-radius:999px;padding:1px 8px;margin-top:2px}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.nav-foot{display:flex;justify-content:space-between;gap:10px;margin-top:26px;flex-wrap:wrap}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--rule);margin-bottom:16px;overflow-x:auto}
+.tab{border:0;background:transparent;padding:8px 14px;cursor:pointer;border-bottom:2px solid transparent;font-weight:600;color:var(--muted);white-space:nowrap}
+.tab.on{color:var(--ink);border-bottom-color:var(--accent)}
+.move{display:grid;grid-template-columns:30px 1fr;gap:10px}
+.move .n{font-family:var(--f-mono);font-size:13px;color:var(--accent);padding-top:3px}
+.alloc{display:flex;gap:10px;flex-wrap:wrap;font-family:var(--f-mono);font-size:12px;color:var(--muted);margin:-6px 0 14px}
+.alloc b{color:var(--ink);font-weight:500}
+.matrix-wrap{overflow-x:auto}
+table.mx{border-collapse:collapse;width:100%;min-width:620px;font-size:13px}
+table.mx th,table.mx td{border:1px solid var(--rule);padding:6px;vertical-align:top}
+table.mx th{background:var(--paper);font-weight:600;text-align:left}
+table.mx textarea{width:100%;min-height:54px;border:0;background:transparent;resize:vertical;font-size:13px;line-height:1.5}
+table.mx td.filled{background:var(--accent-soft)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:22px}
+.stat{border:1px solid var(--rule);border-radius:8px;padding:10px 12px}
+.stat .k{font-size:12px;color:var(--muted)}
+.stat .v{font-family:var(--f-mono);font-size:20px;font-variant-numeric:tabular-nums}
+.stat .s{font-size:12px}
+.rub{display:flex;flex-direction:column;gap:12px}
+.rub-item{border:1px solid var(--rule);border-radius:8px;padding:10px 14px}
+.rub-item .hd{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.rub-item .hd strong{font-size:14px}
+.scale{display:flex;gap:4px}
+.scale button{width:32px;height:30px;border:1px solid var(--rule);background:var(--sheet);border-radius:5px;cursor:pointer;font-family:var(--f-mono)}
+.scale button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.rub-item .desc{font-size:12.5px;color:var(--muted);margin-top:6px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.total{display:flex;align-items:center;gap:14px;margin:16px 0;padding:12px 16px;border-radius:8px;background:var(--paper);flex-wrap:wrap}
+.total .v{font-family:var(--f-mono);font-size:28px}
+.manuscript{font-family:var(--f-display);font-size:17px;line-height:1.95;white-space:pre-wrap;background:var(--paper);border-radius:8px;padding:22px 24px;max-width:70ch}
+aside.side{position:sticky;top:calc(env(safe-area-inset-top,0px) + 76px);display:flex;flex-direction:column;max-height:calc(100vh - 100px);min-width:0}
+.stabs{display:flex;gap:2px;background:var(--rule);border-radius:8px;padding:3px;margin-bottom:10px}
+.stab{flex:1;border:0;background:transparent;border-radius:6px;padding:7px 6px;cursor:pointer;font-size:13.5px;font-weight:600;color:var(--muted);white-space:nowrap}
+.stab.on{background:var(--sheet);color:var(--ink)}
+.stab.ai.on{color:var(--ai)}
+.spane{overflow:auto;display:flex;flex-direction:column;gap:12px;padding-bottom:10px;min-height:0}
+.note{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:14px 16px}
+.note h3{font-size:12px;letter-spacing:.08em;color:var(--muted);margin:0 0 6px;font-weight:600}
+.note p{margin:0 0 8px;font-size:14px}
+.note p:last-child{margin-bottom:0}
+.note .src{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.note ul{margin:0;padding-left:18px;font-size:14px}
+.note li{margin-bottom:4px}
+.note.ex{background:var(--paper)}
+.note.ex p{font-family:var(--f-display);font-size:15px;line-height:1.75}
+.aibox{background:var(--sheet);border:1px solid var(--ai);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.aistatus{font-size:12.5px;color:var(--muted);display:flex;gap:6px;align-items:flex-start}
+.aistatus i{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none;margin-top:6px;display:block}
+.aistatus.on i{background:var(--ok)}
+.aistatus.off i{background:var(--warn)}
+.aistatus a{color:var(--accent)}
+.modegrp{font-size:11px;letter-spacing:.06em;color:var(--muted);font-weight:600;margin:4px 0 2px}
+.modes{display:flex;flex-wrap:wrap;gap:5px}
+.mode{border:1px solid var(--rule);background:var(--sheet);border-radius:999px;padding:3px 10px;font-size:12.5px;cursor:pointer}
+.mode.on{background:var(--ai);border-color:var(--ai);color:var(--ai-ink)}
+.aibox textarea,.aibox select{width:100%;border:1px solid var(--rule);border-radius:var(--r);background:var(--sheet);padding:8px 10px;font-size:14px}
+.aidesc{font-size:13px;color:var(--ink);background:var(--ai-soft);border-radius:6px;padding:8px 10px}
+details.ctx summary{cursor:pointer;font-size:12.5px;color:var(--muted)}
+details.ctx pre{white-space:pre-wrap;font-family:var(--f-mono);font-size:11.5px;background:var(--paper);border-radius:6px;padding:8px;max-height:220px;overflow:auto;margin:6px 0 0}
+.aiout{font-size:14px;line-height:1.7;border-top:1px solid var(--rule);padding-top:10px;min-height:20px;overflow-wrap:anywhere}
+.aiout h4{font-size:14.5px;margin:10px 0 4px}
+.aiout p{margin:0 0 8px}
+.aiout ul,.aiout ol{margin:0 0 8px;padding-left:20px}
+.aiout table,.rnote table{border-collapse:collapse;font-size:12.5px;margin:6px 0;display:block;overflow-x:auto}
+.aiout td,.rnote td{border:1px solid var(--rule);padding:4px 6px;vertical-align:top}
+.aiout .thinking{color:var(--muted);font-style:italic}
+.aiacts{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.aiacts select{width:auto;max-width:180px;padding:4px 6px;font-size:13px}
+.caution{font-size:12px;color:var(--muted);border-left:3px solid var(--warn);padding-left:8px;margin:0}
+.rnote{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:12px 14px}
+.rnote .hd{display:flex;justify-content:space-between;gap:8px;align-items:baseline;font-size:12.5px;color:var(--muted);margin-bottom:6px;flex-wrap:wrap}
+.rnote .hd b{color:var(--ai);font-weight:600}
+.rnote .body{font-size:13.5px;line-height:1.65;max-height:220px;overflow:auto}
+.rnote .body p{margin:0 0 6px}
+.flag{font-family:var(--f-mono);font-size:11px;padding:0 6px;border-radius:4px;border:1px solid var(--rule);color:var(--muted);margin-left:6px;vertical-align:1px;font-weight:400}
+dialog{border:1px solid var(--rule);border-radius:12px;background:var(--sheet);color:var(--ink);max-width:760px;width:calc(100% - 32px);padding:0}
+dialog::backdrop{background:rgba(10,14,22,.5)}
+.dlg-h{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--rule);position:sticky;top:0;background:var(--sheet)}
+.dlg-h h2{font-family:var(--f-display);font-size:20px;margin:0}
+.dlg-b{padding:16px 20px;max-height:70vh;overflow:auto}
+.pat{border-bottom:1px solid var(--rule);padding:12px 0}
+.pat:last-child{border-bottom:0}
+.pat h4{margin:0 0 4px;font-size:15px}
+.pat h4 em{font-style:normal;font-family:var(--f-mono);color:var(--accent);margin-right:6px;font-size:13px}
+.pat p{margin:0 0 6px;font-size:14px}
+.pat blockquote{margin:0;font-family:var(--f-display);font-size:14.5px;background:var(--paper);padding:8px 12px;border-radius:6px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--sheet);padding:8px 16px;border-radius:999px;font-size:14px;z-index:20;max-width:calc(100% - 32px)}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--bad-soft);color:var(--bad);border-radius:6px;padding:6px 10px;font-size:13px}
+@media (max-width:1240px){.layout{grid-template-columns:200px minmax(0,1fr)}aside.side{grid-column:2;position:static;max-height:none}}
+@media (max-width:780px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  nav.rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px}
+  .phase,.progress{display:none}
+  .step{grid-template-columns:24px auto;white-space:nowrap}
+  aside.side{grid-column:1}
+  main.work{padding:18px 16px 22px}
+  .work h2{font-size:23px}
+  .rub-item .desc{grid-template-columns:1fr}
+}
+@media print{header.top,nav.rail,aside.side,.nav-foot,.bar,#confirmZone,.alloc,.checkbox-results,.toast,.todo,.welcome{display:none!important}body{background:#fff;color:#000;padding:0}.layout{display:block;margin:0}main.work{border:0;padding:0;background:#fff}.manuscript{background:#fff;max-width:none;padding:0;font-size:12pt;color:#000}.eyebrow,.lede{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><h1>파이퍼 설교 연구</h1><small>찾고 · 연구하고 · 맛보고 · 쓰고 · 점검한다</small></div>
+  <div class="bar">
+    <label class="toggle" for="guideToggle"><input type="checkbox" id="guideToggle"> 예시 펼쳐 보기</label>
+    <select id="projSel" class="proj" aria-label="설교 선택"></select>
+    <button class="btn" id="newBtn">새 설교</button>
+    <button class="btn" id="sampleBtn">예시 · 마 13:44</button>
+    <button class="btn" id="patBtn">패턴 사전</button>
+    <button class="btn" id="backupBtn" title="모든 설교를 JSON 파일로 저장">백업</button>
+    <label class="btn" for="restoreIn" style="margin:0">복원</label><input type="file" id="restoreIn" accept=".json,application/json" hidden>
+    <button class="btn ghost" id="delBtn" title="현재 설교 삭제">삭제</button>
+  </div>
+  <div class="credit">비전AI교육연구소 Ph.D. 곽한영 대표</div>
+</header>
+<div id="confirmZone"></div>
+
+<div class="layout">
+  <nav class="rail" id="rail" aria-label="설교 작성 공정"></nav>
+  <main class="work" id="work"></main>
+  <aside class="side" id="side" aria-label="코치 노트와 AI 연구실">
+    <div class="stabs" role="tablist">
+      <button class="stab on" data-side="coach" role="tab">코치 노트</button>
+      <button class="stab ai" data-side="ai" role="tab">AI 연구실</button>
+      <button class="stab" data-side="notes" role="tab" id="notesTab">연구 노트</button>
+    </div>
+    <div class="spane" id="spane"></div>
+  </aside>
+</div>
+
+<dialog id="patDlg">
+  <div class="dlg-h"><h2>파이퍼 설교 패턴 사전</h2><button class="btn sm" id="patClose">닫기</button></div>
+  <div class="dlg-b" id="patBody"></div>
+</dialog>
+
+<script>
+(function(){
+"use strict";
+const RATE=280;
+const LS="piper-workshop-v2";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const len=s=>String(s||"").length;
+const uid=()=>"p"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const lines=s=>String(s||"").split("\n").filter(x=>x.trim());
+
+/* ================= 패턴 사전 ================= */
+const PATTERNS=[
+ ["본문 전문 먼저 게시","설교가 본문의 해설임을 시각적으로 선언한다. 『A Holy Ambition』 모든 장이 본문 전체를 먼저 싣는다.","오늘은 몇 구절만 고르지 않겠습니다. 단락 끝까지 함께 읽고, 설교는 이 본문이 하는 말 이상을 하지 않겠습니다."],
+ ["3대지 명사구","대지 사이에 논리 고리를 둔다. 예: 거룩한 야망 → 측량할 수 없는 필요 → 전 지구적 전략(롬 15장).","첫째, 한 가지 소원. 둘째, 두 가지 길. 셋째, 한 가지 보화."],
+ ["역순 전개","가장 큰 목적에서 시작해 수단으로 내려와 '우리'로 끝낸다(엡 3:8–10을 10→8절로).","오늘은 14절에서 시작해 3절로 거슬러 올라가, 마지막엔 이 자리의 여러분에게 도착하겠습니다."],
+ ["연대기 본문 행진","명제를 창세 전 → 창조 → 출애굽 → … → 재림 순서의 본문들로 쌓아 증명한다.","제 말 대신 성경이 시간 순서대로 증언하게 하겠습니다. 열 정거장을 함께 걷겠습니다."],
+ ["번호 매긴 관찰·이유","관찰 6가지, 확신의 이유 4가지, 대가 6가지와 복 10가지. 복을 대가보다 더 많이 세는 배치 자체가 메시지다.","대가 세 가지를 정직하게 말씀드리고, 그보다 많은 일곱 가지 복을 말씀드리겠습니다."],
+ ["문법·논리 관계 해부","대응표(빌 1:20–21), 뿌리→열매 4단계(엡 1:5–6), 목적 접속사 '~하여'(시 67:1–2), 동사 하나('기억하라').","21절 맨 앞의 '왜냐하면'을 놓치면 이 본문을 놓칩니다."],
+ ["어색한 연결 붙잡기","'두려워 말라, 너희가 악을 행했으나'(삼상 12:20)처럼 어긋난 접속에서 복음이 드러난다.","문장이 틀린 것 같지요? 이 틀림이 복음입니다."],
+ ["같은 단어 쌍 평행 연구","골 1:24 '남은 고난'을 같은 단어 쌍이 나오는 빌 2:30(에바브로디도)으로 풀어낸다.","바울이 같은 단어를 다른 곳에서 어떻게 썼는지 보면 실마리가 풀립니다."],
+ ["반론 먼저 세우고 답하기","가상 반론, 실제 항의 편지, 반대처럼 보이는 본문(고전 13:5)을 정면으로 다룬다.","'결국 내 행복을 위해 믿으라는 말입니까?' 좋은 질문입니다. 고전 13:3이 답합니다."],
+ ["공식 한 단어 바꾸기","소요리문답의 'and'를 'by' 또는 'in'으로. 익숙한 문장이라 변화가 각인된다.","주기도문의 '나라가 임하시오며'를 오늘은 '내게서부터 임하시오며'로 읽어 봅시다."],
+ ["대조 쌍","자랑/자기연민, 현미경/망원경, 사자/어린양, '이것 또는 저것'이 아니라 '이것 안의 저것'.","자랑은 '이만큼 이뤘다', 자기연민은 '이만큼 당했다'. 결론은 같습니다. '나를 봐 달라.'"],
+ ["일상 비유","입맞춤, '제 기쁨입니다' 하며 계산하는 사업가, 진흙 파이, 퀸 메리호, 붓으로 그리는 화가, 밧줄 붙잡기.","편의점 삼각김밥으로 배를 채우면 어머니 밥상 앞에서 수저가 안 갑니다."],
+ ["전기와 자기 고백","선교사 전기는 '모방하라'(히 13:7) 목적으로, 자기 고백은 설교자가 먼저 맛보았다는 증거로 쓴다.","아버지 장례식 날 밤, 이 구절이 처음으로 제게 '말씀'이 되었습니다."],
+ ["청중층별 호명","설교 중간에 '어린이 여러분' 단락을 넣고 다시 모든 세대로 넓힌다.","초등학생 친구들, '야망'은 정말정말 하고 싶어서 다른 재미있는 걸 참게 되는 일이에요."],
+ ["질문형 적용","'여러분은 그렇게 기도합니까?' 다섯 시험을 다섯 질문으로 바꾼다.","집에 가는 차 안에서 한 질문만 붙드십시오. '지난주 나를 가장 만족시킨 것은 무엇이었나?'"],
+ ["하나님 1인칭 의역","본문 근거가 분명할 때만, 의역임을 밝히고 하나님의 음성으로 풀어 말한다(시 67편).","'내가 너희에게 건물과 재정을 준 것은 머물라고가 아니다. 내 길이 땅끝에 알려지게 하려 함이다.'"],
+ ["기도·송영으로 맺기","신학의 결론은 정보가 아니라 경배다. 『Seeing and Savoring Jesus Christ』는 모든 장을 기도로 끝낸다.","아버지, 진흙 파이를 내려놓게 하시고 주의 앞의 충만한 기쁨을 맛보게 하소서."]
+];
+
+/* ================= AI 모드 ================= */
+const AI_GROUPS=[["본문 연구",["context","lang","grammar","versions","literary","background","parallels","redemptive","theology"]],["문헌",["commentary","tradition","tools"]],["설교 설계",["questions","oddcands","flow","propcheck","meditate","structure","contact","introfb"]],["대지·적용",["proof","objection","illustration","pointfb","appq","rubricai"]],["자유 질문",["free"]]];
+const AI={
+ context:{label:"문맥·단락 경계",desc:"앞뒤 문맥과 단락 경계를 판단하고, 경계의 근거가 되는 표지어를 찾습니다.",task:"이 본문의 단락 경계가 적절한지 판단하라. (1) 시작과 끝을 표시하는 표지어(접속사, 장면 전환, 반복구) (2) 바로 앞 단락과 뒤 단락의 요지 각 한 줄 (3) 책 전체 흐름 속 위치 (4) 경계를 넓히거나 좁혀야 한다면 그 제안과 이유."},
+ lang:{label:"원어 분석",desc:"핵심 원어 단어 5–8개를 표로 정리합니다. 원문·음역·기본형·형태·뜻.",task:"본문의 핵심 원어(히브리어/아람어/헬라어) 단어 5–8개를 표로 정리하라. 열: 원문 | 음역 | 기본형 | 품사·형태(시제/태/법/격) | 기본 뜻 | 이 본문에서의 설교적 의미(한 줄). 표 다음에 주동사와 종속 구조를 3–5줄로 설명하라. 형태 분석이 확실하지 않으면 '확인 필요'라고 적어라."},
+ grammar:{label:"문법·구문",desc:"접속사·전치사·분사·목적절을 찾아 절 사이 관계로 분류합니다.",task:"본문의 접속사, 전치사구, 분사, 목적절·결과절을 찾아라. 각각을 '원문 표현 → 우리말 → 관계 유형(근거/목적/결과/방법/조건/대조/출처/시간)' 형식으로 정리하라. 그다음 설교에서 청중이 놓치기 쉬운 문법 포인트 2개를 꼽아라."},
+ versions:{label:"번역 비교",desc:"개역개정·새번역·ESV·NASB와 원문 직역을 비교해 갈라지는 곳을 찾습니다.",task:"이 본문을 개역개정, 새번역, ESV, NASB, 원문 직역 관점에서 비교하라. 의미나 뉘앙스가 갈라지는 곳 3–5곳을 표로: 위치 | 번역별 표현 | 원문 | 차이가 생기는 이유 | 설교에서의 함의. 번역문 전체를 길게 옮기지 말고 해당 구절만 짧게 인용하라. 번역문을 정확히 기억하지 못하면 '확인 필요'라고 적어라."},
+ literary:{label:"문학 구조·장르",desc:"장르, 교차대구·병행·반복 같은 구조와 수사 장치를 분석합니다.",task:"본문의 장르와 그 장르를 읽는 원칙을 먼저 2–3줄로 말하라. 그다음 문학 구조(교차대구, 병행, 반복, 수미상관 등)가 있다면 도식으로 보여 주고, 수사 장치와 강조점을 설명하라. 구조가 뚜렷하지 않다면 억지로 만들지 말고 그렇다고 말하라."},
+ background:{label:"역사·문화 배경",desc:"해석에 실제로 영향을 주는 배경만 골라 근거 수준과 함께 제시합니다.",task:"본문 해석에 실제로 영향을 주는 역사·문화·지리·사회·종교 배경을 3–6개 제시하라. 각 항목: 내용 | 본문 해석에 주는 영향 | 근거 수준(확실 / 개연적 / 학자 간 논쟁). 흥미롭지만 해석에 영향이 없는 정보는 빼라."},
+ parallels:{label:"평행·정경 본문",desc:"같은 실재를 말하는 구약·신약 본문과 그 기여를 찾습니다.",task:"이 본문과 같은 실재를 말하는 정경 본문 5–7개를 구약과 신약에서 찾아라. 각 항목: 장절 | 공통점 | 이 본문 이해에 더해 주는 것(한 줄). 단어만 같고 주제가 다른 본문은 제외하라. 장절 번호는 정확해야 하며 확실하지 않으면 표시하라."},
+ redemptive:{label:"구속사 위치",desc:"창조–타락–구속–완성 속 위치와 그리스도로 이어지는 선을 봅니다.",task:"이 본문이 창조–타락–구속–완성의 구속사 흐름 어디에 있는지, 그리고 그리스도와 어떻게 연결되는지 설명하라. 억지 모형론은 피하고, 본문 자체와 신약의 사용에 근거한 연결만 제시하라."},
+ theology:{label:"신학 주제",desc:"본문이 보여 주는 하나님과 인간, 연결되는 조직신학 주제를 정리합니다.",task:"이 본문이 보여 주는 (1) 하나님(그리스도)의 속성과 행위 (2) 인간의 상태 (3) 연결되는 조직신학 주제(신론·인간론·기독론·구원론·교회론·종말론 중) (4) 개혁주의 신앙고백(웨스트민스터 등)과의 접점을 정리하라. 각 항목에 본문 근거 절을 달아라."},
+ commentary:{label:"주석·문헌 안내",desc:"이 본문의 표준 주석서와 연구서, 주요 해석 쟁점을 안내합니다.",task:"이 본문 연구에 쓸 표준 주석서와 연구서를 기술적 주석 / 설교적 주석 / 신학적 저작으로 나눠 안내하라. 실재가 확실한 책만 저자와 서명으로 적고, 쪽수와 인용문은 절대 지어내지 마라. 확실하지 않은 책은 넣지 마라. 그다음 이 본문의 주요 해석 쟁점 2–3개와 각 입장, 각 입장을 지지하는 본문 근거를 정리하라."},
+ tradition:{label:"교부·청교도·파이퍼",desc:"아우구스티누스, 칼빈, 청교도, 에드워즈, 파이퍼가 이 본문·주제를 다룬 곳을 안내합니다.",task:"아우구스티누스, 칼빈, 청교도(오웬, 백스터, 굿윈 등), 조나단 에드워즈, 존 파이퍼가 이 본문이나 이 본문의 주제를 다룬 저작이나 설교를 안내하라. 확실한 것만 저자·제목으로 적고, 기억이 불확실하면 '확인 필요'라고 표시하라. 인용문을 만들어 내지 말고 요지만 한두 줄로 풀어 써라."},
+ tools:{label:"연구 도구 안내",desc:"이 본문 연구에 맞는 원어 사전·문법서·성경 소프트웨어 사용법을 안내합니다.",task:"이 본문을 연구할 때 쓸 원어 사전(예: BDAG, HALOT 등), 문법서, 무료·유료 성경 연구 도구를 안내하고, 이 본문의 핵심 단어 하나를 예로 들어 사전에서 무엇을 확인해야 하는지 단계별로 보여 줘라. 존재가 확실한 자료만 적어라."},
+ questions:{label:"관찰 질문 생성",desc:"내가 먼저 쓴 질문을 보완하는 관찰 질문을 만듭니다. 결과는 질문 칸에 덧붙일 수 있습니다.",task:"본문에 던질 관찰 질문 20개를 만들어라. 해석이나 적용 질문이 아니라 본문의 단어·순서·연결·생략·반복을 묻는 관찰 질문이어야 한다. 사용자가 이미 쓴 질문과 겹치지 않게 하라. 한 줄에 하나씩, 번호와 기호 없이 질문만 출력하라.",target:"s2_q",plain:true},
+ oddcands:{label:"어색한 연결 후보",desc:"통념과 어긋나거나 예상과 반대인 연결 후보 3개를 찾습니다.",task:"이 본문에서 통념과 어긋나거나 예상과 반대 방향인 연결(접속사, 동사 순서, 이유 제시) 후보 3개를 찾아라. 각각: 본문 표현 | 정상이라면 예상되는 문장 | 실제 문장이 말하는 것 | 설교 정점이 될 가능성(상/중/하)과 이유."},
+ flow:{label:"명제 흐름 초안",desc:"절마다 명제와 관계를 붙인 초안을 만듭니다. 형식: 절 | 명제 | 관계",task:"본문의 각 절(필요하면 반절)을 짧은 우리말 명제로 바꾸고 관계를 붙여라. 관계는 주명제, 근거, 목적, 결과, 방법, 조건, 대조, 출처, 시간 중 하나만 쓴다. 출력은 한 줄에 '절 | 명제 | 관계' 형식만, 다른 설명 없이.",target:"s4_flow",plain:true},
+ propcheck:{label:"핵심 명제 점검",desc:"내 핵심 명제를 3가지 기준과 영광–만족 원리로 평가하고 대안을 냅니다.",task:"사용자의 핵심 명제와 영광–만족 문장을 평가하라. 기준: (1) 본문 어휘로 증명되는가 (2) 하나님(그리스도)이 중심인가 (3) 이 본문에만 맞을 만큼 구체적인가 (4) '해야 한다'로 끝나 의무로 끝나지 않는가 (5) 하나님이 보화로 보이고 그 안의 만족이 그분의 영광이 되는 구조인가. 각 기준에 판정과 이유 한 줄, 그다음 25–40자 대안 명제 3개."},
+ meditate:{label:"묵상 질문",desc:"설교자가 먼저 맛보도록 돕는 성찰 질문만 줍니다. 고백 노트는 대신 쓰지 않습니다.",task:"설교자가 이 본문의 진리를 먼저 맛보도록 돕는 자기 성찰 질문 7개를 만들어라. 답이나 고백문을 대신 쓰지 마라. 질문은 구체적이어야 하고, 지난 한 주의 실제 생활(시간, 돈, 관계, 두려움, 기쁨)을 건드려야 한다. 마지막에 이 진리 앞에서 드릴 짧은 기도 제목 2개만 덧붙여라."},
+ structure:{label:"구조 3안",desc:"본문 논리에 맞는 설교 구조 3안과 각 안의 장단점을 제시합니다.",task:"이 본문으로 만들 수 있는 설교 구조 3안을 제시하라. 3대지, 역순 전개, 연대기 본문 행진, 번호 관찰 중 본문 논리에 맞는 것을 고른다. 각 안: 구조 유형 | 대지 명사구(각 15자 이내)와 근거 절 | 정점 대지와 그 이유 | 장점 | 위험. 마지막에 사용자의 어색한 연결과 가장 잘 맞는 안을 추천하라."},
+ contact:{label:"서론 접점 아이디어",desc:"한국 회중의 일상에서 출발하는 서론 접점 3개를 제안합니다.",task:"이 설교의 서론 '접점' 아이디어 3개를 제안하라. 한국 회중의 평범한 일상(직장, 가정, 학업, 돈, 관계, 스마트폰 등)에서 출발해 본문의 긴장으로 자연스럽게 넘어가야 한다. 각 3–4문장. 본문과 무관한 유머나 출처 불명의 감동 실화는 쓰지 마라."},
+ introfb:{label:"서론 피드백",desc:"서론 4동작을 점수와 개선 방향으로 평가합니다. 다시 써 주지 않습니다.",task:"사용자의 서론을 4동작(접점, 긴장, 명제 예고, 본문 복귀)으로 평가하라. 각 동작에 1–5점과 이유 한 줄, 개선 방향 한 줄. 서론 전체를 다시 써 주지 말고, 가장 약한 동작에 대해서만 한 문장 예시를 보여 줘라."},
+ proof:{label:"증명할 단어",desc:"현재 대지의 근거 절에서 청중에게 짚어 줄 결정적 단어를 찾습니다.",task:"현재 대지의 근거 절에서 청중이 성경을 보며 확인할 결정적 단어 2–3개를 골라라. 각각: 본문 단어 | 원문과 형태 | 왜 결정적인가 | 강단에서 짚어 주는 한 문장 예시."},
+ objection:{label:"반론 후보",desc:"청중이 이 대지에 대해 속으로 할 반문 3개와 본문 기반 답의 방향.",task:"현재 대지에 대해 청중이 속으로 할 반문 3개를 강한 것부터 제시하라. 반론을 약하게 만들지 마라. 각각: 반문(청중의 말투로) | 본문이 답하는 방향 | 근거 절 | 피해야 할 답(쉽게 넘어가는 답)."},
+ illustration:{label:"예화 아이디어",desc:"한국 회중 일상에서 이 대지의 실재를 밝히는 예화 5개.",task:"현재 대지의 실재를 밝히는 예화 아이디어 5개를 제안하라. 조건: 한국 회중의 일상, 1분(약 280자) 이내, 주인공이 설교자가 아니라 하나님이거나 하나님의 진리, 본문의 실재를 밝혀야 함. 실존 인물이나 역사적 사건은 사실 확인이 필요하면 '확인 필요'를 붙여라. 각 2–3문장."},
+ pointfb:{label:"대지 원고 피드백",desc:"현재 대지 원고를 6동작과 파이퍼 원리로 점검합니다.",task:"현재 대지 원고를 6동작(진술, 증명, 설명, 반론, 예시, 환희·적용)과 파이퍼 원리(본문 종속, 하나님 중심, 의무와 기쁨의 결합, 감탄한 뒤 질문)로 점검하라. 잘된 점 2개, 고칠 점 3개(어느 동작의 어느 문장인지 짚어서), 가장 먼저 고칠 1가지. 원고를 다시 써 주지 마라."},
+ appq:{label:"적용 질문 후보",desc:"'해야 한다' 대신 '보이는가'를 묻는 적용 질문 6개. 질문 칸에 덧붙일 수 있습니다.",task:"이 설교의 적용 질문 후보 6개를 만들어라. '해야 합니다'로 끝나는 명령이 아니라, 하나님이 보화로 보이는지, 무엇을 귀히 여기는지, 기쁨이 없을 때 어떻게 하는지를 묻는 질문이어야 한다. 한 줄에 하나, 질문만, 번호와 기호 없이. 줄 끝에 괄호로 대상(새신자/성숙한 성도/고난 중/청소년)을 적어라.",target:"s10_q",plain:true},
+ rubricai:{label:"루브릭 평가",desc:"원고 전체를 루브릭 8항목으로 평가하고 먼저 고칠 2가지를 꼽습니다.",task:"원고 전체를 다음 8항목으로 각 1–5점 평가하라: 본문 종속성, 논리 흐름, 하나님 중심, 영광–만족 결합, 설교자 경험, 반론 정직성, 적용 품질, 분량·전달. 표로 항목 | 점수 | 근거(원고의 구체적 위치). 총점(40점 만점)과 가장 먼저 고칠 2가지를 마지막에 적어라.",full:true},
+ free:{label:"자유 질문",desc:"본문과 내 연구 내용을 바탕으로 무엇이든 묻습니다.",task:""}
+};
+const AI_RULES=`당신은 개혁주의 강해설교를 준비하는 한국 목회자를 돕는 성경 연구 조교입니다. 이 목회자는 존 파이퍼의 설교 방식(성경 아래 서기, 본문의 단어에서 실재로, 설교자가 먼저 맛보기, '하나님은 우리가 그분 안에서 가장 만족할 때 가장 영광 받으신다')을 배우고 있습니다.
+규칙:
+1. 한국어로 답하고, 원어는 원문 + 음역 + 뜻을 함께 쓴다.
+2. 모든 주장에 장절을 단다. 사실·해석·추정을 구분한다.
+3. 확실하지 않은 정보는 '확인 필요'라고 표시한다. 책 제목, 저자, 쪽수, 인용문을 지어내지 않는다.
+4. 설교자의 결론을 대신 내리지 말고, 본문 근거와 선택지를 준다.
+5. 모든 본문을 억지 모형론 없이 그리스도의 십자가와 부활에 연결할 길을 찾고, 명령을 말할 때는 그 명령을 가능케 하는 은혜를 먼저 말한다.
+6. 개혁주의 신앙고백(웨스트민스터, 벨직, 하이델베르크)과 충돌하는 해석은 그렇다고 밝힌다.
+7. 간결하게. 소제목, 짧은 목록, 필요하면 표(마크다운)를 쓴다. 서론과 맺음 인사는 쓰지 않는다.`;
+
+/* ================= 공정 정의 ================= */
+const EMO=["경외","기쁨","애통","소망","두려움","감사","갈망","회개"];
+const REL=["주명제","근거","목적","결과","방법","조건","대조","출처","시간"];
+const RUBRIC=[
+ ["본문 종속성","모든 대지가 본문 단어로 증명됨","일부 대지가 주제 설명","본문은 출발점일 뿐"],
+ ["논리 흐름","대지 간 관계가 말로 명시됨","순서는 맞으나 연결어 약함","대지가 병렬 나열"],
+ ["하나님·그리스도 중심","하나님이 각 대지의 주어이고 십자가·부활이 명시됨","하나님은 말하되 그리스도는 암시만","인간의 노력이 주어"],
+ ["영광–만족 결합","의무와 기쁨이 한 동기로 제시","기쁨을 부록으로 언급","의무만 또는 위로만"],
+ ["설교자 경험","고백 노트가 원고에 녹아 있음","경험은 있으나 원고에 없음","맛보기 단계 생략"],
+ ["반론 정직성","청중의 실제 반문을 강하게 세우고 답함","약한 반론만 다룸","반론 없음"],
+ ["적용 품질","질문형, 2–3칸, 보화를 크게 보이게 함","일반적 권면","'더 열심히'만 남음"],
+ ["분량·전달","배분 ±10%, 소리 내 1회 이상 낭독","±20%","시간 측정 안 함"]
+];
+const MOVES=[
+ ["진술","대지 명제 한 문장. 25자 안팎, 하나님이 주어.",.05,"둘째, ___은(는) ___합니다.","대지 제목을 문장으로 바꿉니다. 주어를 하나님이나 본문의 실재로 세웁니다."],
+ ["증명","해당 절을 다시 읽고 결정적 단어를 짚는다.",.20,"본문을 다시 보십시오. \"___\" 여기서 ___라는 단어가 ___ 앞에 있습니다.","청중이 성경을 펴고 같은 단어를 보게 합니다. 원어는 한 번만, 쉬운 말로."],
+ ["설명","논리 관계와 평행 본문 1–2개.",.30,"이 순서가 왜 중요합니까? 우리는 보통 ___라고 생각합니다. 그런데 ___. 같은 진리가 ___에도 나옵니다.","논리 흐름 공정의 관계를 말로 풀고 평행 본문 하나를 붙입니다."],
+ ["반론","청중의 속마음 반문 하나와 본문의 답.",.10,"이쯤 되면 이런 질문이 생기실 겁니다. \"___\" 정직한 질문입니다. 본문은 ___라고 답합니다.","반론을 일부러 약하게 만들지 않습니다."],
+ ["예시","비유 또는 이야기 하나, 1분 이내.",.15,"___를 떠올려 보십시오. ___. 이것이 본문이 말하는 ___입니다.","주인공은 하나님 또는 진리. 1분(약 280자) 이내."],
+ ["환희·적용","진리 앞의 감탄, 그다음 질문.",.20,"얼마나 놀라운 ___입니까. 하나님은 ___. 오늘 스스로 물어보십시오. ___?","먼저 감탄하게 하고, 그다음 '해야 한다' 대신 '보이는가'를 묻습니다."]
+];
+const MX_ROWS=["불신자·구도자","새신자","성숙한 성도","고난 중인 성도","청소년"];
+const MX_COLS=["생각 · 무엇을 믿나","감정 · 무엇을 귀히 여기나","행동 · 이번 주 무엇을"];
+const STRUCT=[
+ ["three","3대지","본문 논리가 세 덩어리로 나뉠 때. 가장 범용."],
+ ["reverse","역순 전개","목적 → 수단 → 우리. 목적절이 겹겹인 서신서."],
+ ["chrono","연대기 행진","한 명제를 여러 본문으로 증명하는 교리·주제 설교."],
+ ["numbered","번호 관찰","목록형 본문(대가와 복, 이유들)."]
+];
+const F=(k,type,label,o)=>Object.assign({k,type,label},o||{});
+
+const STEPS=[
+ {phase:"준비",id:"setup",title:"설교 설정",eyebrow:"공정 0 · 10분",
+  lede:"본문과 청중, 설교 시간을 정합니다. 설교 시간은 원고 분량을 나누는 기준이 됩니다.",
+  todo:["본문 범위를 한 사고 단위로 정한다","강단 역본으로 본문 전문을 붙인다","청중과 설교 시간을 적는다"],
+  fields:[
+   F("title","text","설교 제목(가제)",{hint:"나중에 바꿔도 됩니다.",how:"본문의 핵심 동사나 이미지로 짓습니다. 제목은 원고를 다 쓴 뒤에 다시 다듬습니다."}),
+   F("ref","text","본문 범위",{hint:"예: 마태복음 13:44",how:"한 절보다 '한 생각의 덩어리'를 고릅니다. 다음 공정에서 경계를 다시 점검합니다."}),
+   F("passage","area","본문 전문",{hint:"설교 시작에 전체를 낭독할 본문(패턴 1).",rows:4,how:"성경 앱에서 개역개정(또는 교회 강단 역본)을 복사해 붙여 넣습니다. 역본 이름을 괄호로 적어 둡니다."}),
+   F("audience","text","청중",{hint:"예: 주일 오전 장년, 새신자 포함",how:"적용 매트릭스에서 어느 줄을 고를지 정하는 기준이 됩니다."}),
+   F("minutes","number","설교 시간(분)",{hint:"원고 분량 = (시간 − 본문 낭독 2분) × 280자"})],
+  coach:{p:"설교자는 성경 위가 아니라 아래에 선다. 권위·나이·학력이 아니라 '평범한 사람이 들어도 정말 본문이 그렇게 말하네' 할 만큼 본문에 붙어 있는지가 전부다.",src:"A Holy Ambition 1장",q:["이 본문이 독립된 사고 단위인가?","청중이 이 본문 앞에서 가장 흔히 하는 오해는?"],trap:"주제를 먼저 정하고 본문을 고르는 것. 파이퍼 방식은 본문이 주제를 정한다."},
+  check(f){return[[len(f.ref)>2,"본문 범위를 적었습니다","본문 범위가 비어 있습니다"],[len(f.passage)>10,"본문 전문을 붙였습니다","본문 전문을 붙여 넣으세요"],[+f.minutes>=10,"설교 시간 "+(f.minutes||"?")+"분","설교 시간을 정하세요"]]}},
+ {phase:"본문 연구",id:"bound",title:"본문 확정",eyebrow:"공정 1 · 1시간",
+  lede:"단락 경계를 정하고 앞뒤 문맥을 읽습니다. 소리 내어 열 번 읽기 전에는 해석하지 않습니다.",
+  todo:["앞뒤 한 장씩 통독","본문 10회 소리 내 읽기","경계 근거와 문맥 5줄 기록"],
+  fields:[
+   F("s1_bound","area","단락 경계와 근거",{hint:"시작과 끝의 접속사, 앞뒤 단락과의 관계",rows:3,how:"본문 앞 3절과 뒤 3절을 읽고 '그러므로, 이에, 또, 그때에' 같은 연결어와 장면 전환을 찾습니다.",tpl:"이 단락은 '___'로 시작하고 '___'로 끝난다. 앞 단락은 ___, 뒤 단락은 ___를 다룬다. 그래서 ___까지를 한 단위로 본다.",ai:["context"]}),
+   F("s1_context","area","앞뒤 문맥 메모(5줄)",{hint:"한 줄에 하나씩",rows:5,how:"앞 단락 요지, 뒤 단락 요지, 같은 장의 반복 단어, 책 전체 흐름, 원래 청중을 한 줄씩 적습니다.",tpl:"앞(  ): \n뒤(  ): \n같은 장의 반복어: \n책 전체 흐름: \n청중(원래 듣던 사람): ",ai:["context","literary"]}),
+   F("s1_read","checks","읽기",{opts:["본문을 소리 내어 10회 읽었다","앞뒤 한 장씩 통독했다"]})],
+  coach:{p:"주석서는 실재·명제 공정 이후에 연다. 남의 결론보다 본문을 먼저 봐야 '성경 아래 서기'와 '먼저 맛보기'가 가능하다.",src:"설계 원칙 · 파이퍼 원리 기반",q:["이 단락의 첫 단어와 마지막 단어는 무엇인가?","바로 앞 단락이 이 본문의 질문을 만들고 있지 않은가?"],trap:"좋아하는 절만 떼어 내는 것."},
+  check(f){const n=lines(f.s1_context).length;return[[len(f.s1_bound)>10,"경계 근거 기록","경계 근거가 비어 있습니다"],[n>=3,"문맥 메모 "+n+"줄","문맥 메모를 3줄 이상 쓰세요"],[(f.s1_read||[]).length===2,"읽기 2항목 완료","읽기 체크가 남았습니다"]]}},
+ {phase:"본문 연구",id:"words",title:"단어 관찰",eyebrow:"공정 2 · 2시간",
+  lede:"막연한 인상을 깨고 문장 자체를 봅니다. 관찰은 '본문은 ~라고 말한다'로 씁니다. '~라는 뜻이다'는 아직 쓰지 않습니다.",
+  todo:["동사·접속사·반복어에 표시","번역 3개 대조","질문 15–30개를 먼저 직접 쓰기"],
+  fields:[
+   F("s2_verbs","area","주동사와 시제·형태",{rows:2,how:"인터리니어 성경(원문 대조)에서 동사에 빨간 표시를 하고 시제·태·법을 확인합니다. 우리말에서 '~하고'로 이어진 동사가 원문에서는 분사인 경우가 많습니다.",tpl:"주동사: ___(시제 ___) → ___ → ___\n분사: ___\n관찰: 본문은 ___라고 말한다.",ai:["lang","grammar"]}),
+   F("s2_conj","area","접속사·전치사·목적절",{hint:"그러므로, 이는, ~하여, ~로부터",rows:2,how:"파란 표시. '왜냐하면'은 근거, '~하여/~하려고'는 목적, '그러므로'는 결과입니다.",tpl:"'___'(원문 ___) — 관계: ___",ai:["grammar"]}),
+   F("s2_repeat","area","반복어·강조어",{rows:2,how:"초록 표시. 같은 단어가 본문과 앞뒤 문맥에 몇 번 나오는지 셉니다. '모든, 다, 항상' 같은 전체어도 표시합니다.",tpl:"'___' ___회(___절, ___절)",ai:["literary"]}),
+   F("s2_trans","area","번역본이 갈라지는 곳",{hint:"개역개정 · 새번역 · ESV · 원문 직역",rows:2,how:"세 역본을 나란히 놓고 단어가 다르거나 어순이 다른 곳만 적습니다.",tpl:"___절: 개역개정 '___' / 새번역 '___' / ESV '___' / 직역 '___'",ai:["versions"]}),
+   F("s2_bias","area","내 선입견 목록",{hint:"내가 이미 '안다'고 생각한 것",rows:2,how:"이 본문으로 들었던 설교, 익숙한 표어, 내가 하고 싶었던 말을 솔직하게 적습니다. 적어 두어야 본문이 그것을 고쳐 줄 수 있습니다.",tpl:"나는 이 본문이 ___라고 말한다고 생각해 왔다.\n내가 이 본문으로 하고 싶은 말은 ___이다.",noai:"선입견은 설교자 자신만 적을 수 있습니다."}),
+   F("s2_q","area","본문에 던지는 질문",{hint:"한 줄에 하나. 최소 15개, 목표 30개.",rows:8,how:"먼저 15개를 직접 씁니다. 그다음 AI 질문으로 보완합니다. '왜 이 단어인가? 왜 이 순서인가? 무엇이 빠졌나? 누구에게 말하나?'",tpl:"왜 ___라고 했을까?\n___와 ___는 어떤 관계인가?\n이 단어가 없으면 무엇이 달라지나?\n원래 청중은 이 말을 어떻게 들었을까?",ai:["questions"]})],
+  coach:{p:"성경 읽기는 막연한 인상에 머물지 말고 단어 자체로 밀고 들어가야 한다. 피상적 읽기는 선교지에서 가장 먼저 드러나고, 영적 싸움 앞에서 버티지 못한다.",src:"A Holy Ambition 후기 4번",q:["이 절에서 빠지면 뜻이 달라질 단어 하나는?","같은 단어가 앞뒤 문맥에서 어떻게 쓰였나?"],trap:"관찰 30개 전에 설교 제목을 정하는 것. AI 질문을 내 질문보다 먼저 받는 것."},
+  check(f){const q=lines(f.s2_q).length;return[[len(f.s2_verbs)>3,"주동사 기록","주동사를 적으세요"],[len(f.s2_conj)>3,"접속사·전치사 기록","접속사·전치사를 적으세요"],[q>=15,"질문 "+q+"개"+(q>=30?" · 목표 달성":""),"질문 "+q+"개 · 최소 15개"],[len(f.s2_bias)>3,"선입견을 드러냈습니다","선입견 목록이 비어 있습니다"]]},
+  warn(f){const t=(f.s2_verbs||"")+(f.s2_repeat||"");return /뜻이다|의미한다/.test(t)?["관찰 칸에 '뜻이다/의미한다'가 있습니다. 해석은 실재·명제 공정으로 미루세요."]:[]}},
+ {phase:"본문 연구",id:"odd",title:"어색한 연결",eyebrow:"공정 2 · 패턴 7",
+  lede:"본문에서 통념과 어긋나는 연결을 하나 찾습니다. 대부분 이곳이 설교의 정점이 됩니다.",
+  todo:["접속사·동사 순서에서 '이상한 곳' 찾기","정상 문장과 비교","깨지는 통념 적기"],
+  fields:[
+   F("s3_odd","area","어색한 연결",{hint:"본문 표현 그대로 인용",rows:2,how:"단어 관찰에서 표시한 접속사와 동사 순서를 다시 봅니다. '이렇게 말하면 안 될 것 같은데?' 싶은 곳이 후보입니다.",tpl:"\"___\" — ___가 ___보다 먼저 나온다.",ai:["oddcands"]}),
+   F("s3_why","area","왜 어색한가",{hint:"정상이라면 어떻게 써야 했을까?",rows:3,how:"정상이라면 쓰였을 문장을 직접 써 보고, 실제 문장과 나란히 놓습니다.",tpl:"정상이라면 '___'여야 한다. 그런데 본문은 '___'라고 말한다. 원문 '___'가 이를 확인한다."}),
+   F("s3_myth","area","이 연결이 깨뜨리는 청중의 통념",{rows:2,how:"교회 안에서 흔히 하는 말 중 이 본문과 부딪히는 말을 찾습니다.",tpl:"우리는 흔히 '___'라고 생각한다."})],
+  coach:{p:"'두려워 말라, 너희가 이 모든 악을 행하였으나.' 정상이라면 '악을 행했으니 두려워하라'여야 한다. 이 어긋남이 복음이고, 근거는 '자기의 크신 이름을 위하여'다.",src:"A Holy Ambition 1장 · 삼상 12:19–22",q:["접속사가 예상과 반대 방향을 가리키는 곳은?","순서가 뒤바뀐 것처럼 보이는 동사는?"],trap:"어색함을 매끄럽게 설명해 버리는 것. 어색함을 청중이 먼저 느끼게 하라."},
+  check(f){return[[len(f.s3_odd)>3,"어색한 연결 발견","어색한 연결을 하나 찾으세요"],[len(f.s3_why)>10,"이유 설명","왜 어색한지 쓰세요"]]}},
+ {phase:"본문 연구",id:"flow",title:"논리 흐름",eyebrow:"공정 3 · 2시간",
+  lede:"각 절을 짧은 명제로 바꾸고 앞 명제와의 관계를 하나 고릅니다. 한 줄 형식: 절 | 명제 | 관계",
+  todo:["절마다 명제 한 줄","관계 9가지 중 하나 붙이기","뼈대 동사 1–2개 지정"],
+  fields:[
+   F("s4_flow","flow","명제 흐름",{hint:"관계 칩을 누르면 커서 위치에 넣어집니다.",rows:8,how:"절(또는 반절)마다 주어+동사로 된 짧은 문장을 만들고, 앞 줄과 어떤 관계인지 고릅니다. 주명제는 보통 주동사가 있는 줄입니다.",tpl:"1a | ___ | 주명제\n1b | ___ | 근거\n2 | ___ | 목적",ai:["flow","grammar"]}),
+   F("s4_main","text","본문의 주동사(뼈대) 1–2개",{hint:"나머지는 이 뼈에 붙은 살입니다.",how:"명제 흐름에서 '주명제'와 '결과/목적'이 걸린 동사를 고릅니다. 이 동사가 대지의 뼈대가 됩니다."})],
+  coach:{p:"파이퍼는 접속사 하나로 논증 전체를 끌어낸다. 빌 1:21의 '왜냐하면'은 20절 목적의 근거이고, 시 67:2의 '~하여'는 이스라엘이 받은 복의 목적이 열방임을 증명한다.",src:"Dangerous Duty 2장 · A Holy Ambition 6장",q:["주명제는 어느 줄인가?","'근거'와 '목적'이 섞이지 않았는가?"],trap:"모든 절을 대지로 만드는 것. 대지는 주동사 1–2개에서 나온다."},
+  check(f){const L=lines(f.s4_flow);const r=L.filter(l=>REL.some(x=>l.includes(x))).length;return[[L.length>=3,"명제 "+L.length+"줄","명제를 3줄 이상 쓰세요"],[L.length&&r===L.length,"모든 줄에 관계 표시","관계가 빠진 줄이 "+(L.length-r)+"개"],[len(f.s4_main)>1,"뼈대 동사 지정","뼈대 동사를 지정하세요"]]}},
+ {phase:"본문 연구",id:"reality",title:"실재와 핵심 명제",eyebrow:"공정 4 · 1.5시간",
+  lede:"단어가 가리키는 하나님과 현실에 닿습니다. 그다음 설교 전체를 한 문장으로 씁니다.",
+  todo:["하나님·인간·구속사 정리","그리스도 연결과 균형 본문","핵심 명제와 영광–만족 문장"],
+  fields:[
+   F("s5_god","area","이 본문이 보여 주는 하나님(그리스도)",{rows:2,how:"본문의 동사 중 하나님(그리스도)이 주어인 동사, 또는 하나님 나라를 묘사하는 이미지에서 찾습니다.",tpl:"이 본문에서 하나님은 ___하시는 분이다(___절).",ai:["theology"]}),
+   F("s5_man","area","드러나는 인간의 상태",{rows:2,how:"인물의 반응, 대조되는 사람, 경고에서 찾습니다.",tpl:"인간은 ___한 상태로 드러난다(___절).",ai:["theology"]}),
+   F("s5_history","text","구속사 위치",{hint:"창조 · 타락 · 구속 · 완성",how:"이 사건·말씀이 그리스도 이전인지, 그리스도 사역 안인지, 교회 시대인지, 완성을 바라보는지 봅니다.",ai:["redemptive","background"]}),
+   F("s5_parallel","text","같은 실재를 가장 선명히 말하는 다른 본문 2개",{how:"단어가 같은 본문보다 '같은 실재'를 말하는 본문을 고릅니다(패턴 4, 8).",tpl:"___ · ___",ai:["parallels"]}),
+   F("s5_christ","area","그리스도와의 연결 — 이 본문의 복음",{hint:"십자가와 부활이 이 본문의 요구를 어떻게 가능케 하는가",rows:3,how:"억지 모형론 대신 세 길 중 하나를 찾습니다. ① 본문이 그리스도를 직접 말한다 ② 본문의 요구를 그리스도가 대신 이루셨다 ③ 본문의 약속을 그리스도가 보증하신다. 이 칸이 비면 설교는 도덕 강연이 됩니다.",tpl:"이 본문이 요구하는 ___을(를) 그리스도는 ___에서 먼저 ___하셨다(___). 그래서 우리는 ___할 수 있다.",ai:["redemptive"]}),
+   F("s5_guard","text","균형 본문 — 이 명제가 과장되지 않게 지키는 본문",{hint:"규범 점검: 성경 전체가 이 명제를 어떻게 제한하는가",how:"이 명제를 끝까지 밀면 어떤 오해가 생길지 생각하고, 그 오해를 막아 주는 본문 하나를 적습니다. 예: 기쁨 강조 → 고후 6:10 '근심하는 자 같으나 항상 기뻐하고'.",tpl:"___(본문)이 ___라는 오해를 막아 준다."}),
+   F("s5_prop","text","핵심 명제",{hint:"25–40자, 본문 어휘로",how:"설교를 들은 사람이 집에 가며 한 문장으로 말할 수 있어야 합니다. 본문의 동사를 그대로 씁니다.",ai:["propcheck"]}),
+   F("s5_gs","gs","영광–만족 문장",{hint:"하나님은 ___할 때 ___로 영광을 받으신다",how:"핵심 명제를 '하나님이 무엇으로 영광 받으시는가'로 바꿔 씁니다.",tpl:"하나님은 우리가 ___을(를) ___보다 귀히 여겨 ___할 때 영광을 받으신다."}),
+   F("s5_c","checks","명제 검증 3문",{opts:["본문 어휘로 증명된다","하나님(그리스도)이 문장의 주어이거나 중심이다","다른 본문에 그대로 붙이면 어색하다(충분히 구체적이다)"]})],
+  coach:{p:"파이퍼 신학 전체는 한 문장의 확장이다. 하나님은 우리가 그분 안에서 가장 만족할 때 가장 영광 받으신다. 영광과 기쁨은 둘이 아니라 하나의 목적이다. 소요리문답도 '목적들'이 아니라 '목적'이라 했다.",src:"Dangerous Duty 2장 · 부록 2",q:["이 본문에서 하나님이 '보화'로 보이는 지점은?","청중이 이 명제를 믿으면 무엇을 덜 사랑하게 되는가?"],trap:"'우리는 ~해야 한다'로 명제를 쓰는 것. 그러면 설교가 의무로 끝난다. 그리고 그리스도 없이 '하나님'만 말하는 것. 파이퍼에게 은혜의 영광은 그리스도의 고난에서 정점에 이른다(Providence)."},
+  check(f){const p=f.s5_prop||"";return[[len(p)>=10&&len(p)<=45,"명제 "+len(p)+"자",len(p)?"명제 "+len(p)+"자 · 10–45자로 다듬으세요":"핵심 명제를 쓰세요"],[len(f.s5_christ)>20&&!/___/.test(f.s5_christ),"그리스도 연결 작성","그리스도와의 연결을 쓰세요. 이것이 빠지면 도덕 강연이 됩니다"],[len(f.s5_guard)>5,"균형 본문 지정","균형 본문을 하나 적으세요"],[len(f.s5_gs)>10&&!/___/.test(f.s5_gs),"영광–만족 문장 작성","영광–만족 문장의 빈칸을 채우세요"],[(f.s5_c||[]).length===3,"검증 3문 통과","검증 3문 중 "+(f.s5_c||[]).length+"개 통과"]]},
+  warn(f){const w=[];if(/해야\s*한다|해야\s*합니다/.test(f.s5_prop||""))w.push("명제가 '해야 한다'로 끝납니다. 하나님의 행위나 가치로 다시 써 보세요.");if(f.s5_prop&&!/하나님|주님|그리스도|예수|천국|성령|주의|주께|나라/.test(f.s5_prop))w.push("명제에 하나님(그리스도, 그 나라)을 가리키는 말이 없습니다.");return w}},
+ {phase:"본문 연구",id:"savor",title:"맛보기와 주석 대조",eyebrow:"공정 5 · 1.5시간",
+  lede:"설교자가 먼저 이 진리를 맛봅니다. 그다음에 주석서를 엽니다. 이 공정의 고백 노트는 AI가 대신 쓰지 않습니다.",
+  todo:["합당한 감정 고르기","기쁨 없음 3단계","고백 노트, 그다음 주석 대조"],
+  fields:[
+   F("s6_emo","chips","이 진리에 합당한 감정",{opts:EMO,how:"본문이 묘사하는 인물의 감정, 또는 본문이 명령하는 감정에서 고릅니다."}),
+   F("s6_gap","range","지금 내 마음과 그 감정의 거리",{hint:"0 = 이미 그 감정 안에 있음 · 10 = 전혀 느끼지 못함"}),
+   F("s6_steps","checks","거리가 크다면: 기쁨 없을 때 3단계",{opts:["기쁨 없음을 죄로 고백했다","순종의 기쁨 회복을 구했다","기쁨이 다시 일기를 바라며 할 수 있는 순종을 했다"]}),
+   F("s6_note","area","설교자 고백 노트(3–5줄)",{hint:"이 중 한 줄이 설교의 자기 고백이 될 수 있습니다.",rows:4,how:"지난 한 주의 시간·돈·관계·두려움 중에서 이 진리와 부딪힌 장면을 정직하게 적습니다. AI 묵상 질문을 참고할 수는 있습니다.",tpl:"이번 주 나는 ___보다 ___에 더 만족했다.\n이 본문은 내게 ___라고 말한다.\n내가 먼저 회개할 것은 ___이다.",ai:["meditate"],noai:"고백은 대신 쓸 수 없습니다. AI는 질문만 줍니다."}),
+   F("s6_comm","area","주석 대조",{hint:"내 해석과 다른 점, 대안 해석과 그것을 택하지 않은 이유",rows:4,how:"기술적 주석 1권 → 설교적 주석 1권 → 신학적 저자 1명 순으로 엽니다. 내 해석과 다른 곳만 적습니다.",tpl:"___(주석)은 ___로 읽는다. 나는 ___ 때문에 ___로 읽는다.",ai:["commentary","tradition","tools"]})],
+  coach:{p:"기쁨이 없을 때 '감정은 상관없으니 그냥 하라'고 하지 않는다. 기쁨 없음을 고백하고, 회복을 구하고, 행함이 기쁨을 다시 일으키길 바라며 순종한다. 설교자의 일은 잔칫상을 차려 청중이 '아…' 할 때까지 먹이는 것이다.",src:"Dangerous Duty 3장 · 6장",q:["이번 주 나는 이 진리보다 무엇에 더 만족했나?","주석가와 내가 갈라지는 곳에서, 나는 본문의 어느 단어 때문에 이렇게 읽는가?"],trap:"이 공정을 '경건의 시간'으로 떼어 내는 것. 파이퍼에게 이것은 연구의 일부다."},
+  check(f){return[[(f.s6_emo||[]).length>0,"감정 "+(f.s6_emo||[]).length+"개 선택","합당한 감정을 고르세요"],[len(f.s6_note)>20,"고백 노트 작성","고백 노트를 쓰세요"],[len(f.s6_comm)>10,"주석 대조 기록","주석 대조를 기록하세요"]]},
+  warn(f){return(+f.s6_gap>=6&&(f.s6_steps||[]).length<3)?["거리가 "+f.s6_gap+"입니다. 원고에 들어가기 전에 3단계를 마치길 권합니다."]:[]}},
+ {phase:"원고",id:"structure",title:"구조 선택",eyebrow:"공정 6 · 설계",
+  lede:"본문 논리에 맞는 구조를 고르고 대지를 짧은 명사구로 정합니다.",
+  todo:["구조 유형 고르기","대지 명사구와 근거 절","정점 대지 = 어색한 연결"],
+  custom:"structure",
+  coach:{p:"『A Holy Ambition』 5장은 엡 3:8–10을 일부러 거꾸로(10→9→8절) 간다. 하나님의 지혜가 천상에 전시되는 목표에서 시작해 교회, 복음 전파, 평범한 선교사로 내려온다. '우리로 끝내고 싶어서'다.",src:"A Holy Ambition 5장 · 1장",q:["대지 사이의 관계(근거·목적·결과)를 한 단어로 말할 수 있는가?","정점 대지가 어색한 연결과 일치하는가?"],trap:"대지를 병렬 나열하는 것."},
+  check(f){const n=+f.s7_count||3;let ok=0;for(let i=1;i<=n;i++)if(len(f["d"+i+"_title"])>1&&len(f["d"+i+"_ref"])>0)ok++;return[[!!f.s7_type,"구조: "+((STRUCT.find(s=>s[0]===f.s7_type)||[])[1]||""),"구조를 고르세요"],[ok===n,"대지 "+n+"개 모두 제목·절 지정","대지 "+ok+"/"+n+"개 완료"],[!!f.s7_peak,"정점 대지 "+f.s7_peak,"정점 대지를 고르세요"]]},
+  warn(f){const n=+f.s7_count||3,w=[];for(let i=1;i<=n;i++)if(len(f["d"+i+"_title"])>24)w.push("대지 "+i+" 제목이 깁니다("+len(f["d"+i+"_title"])+"자). 명사구로 줄이세요.");return w}},
+ {phase:"원고",id:"intro",title:"서론 4동작",eyebrow:"공정 6 · 원고",
+  lede:"접점 → 긴장 → 명제 예고 → 본문 복귀. 결론을 숨기지 않고 미리 말합니다.",
+  todo:["청중의 갈망에서 출발","어색한 연결을 느끼게","명제를 미리 말하기"],
+  fields:[
+   F("i1","ms","① 접점 · 40%",{hint:"청중이 이미 느끼는 갈망이나 문제",rows:4,how:"이번 주 교인들이 실제로 겪는 장면 하나. 통념 칸(공정 2)과 연결되면 가장 좋습니다.",tpl:"___한 적 있으십니까? 우리는 ___. 그리고 ___.",ai:["contact"]}),
+   F("i2","ms","② 긴장 · 30%",{hint:"본문의 어색한 점, 통념과의 충돌",rows:3,how:"어색한 연결(공정 2)을 그대로 가져와 청중이 '어?' 하게 만듭니다.",tpl:"그런데 오늘 본문의 ___은(는) ___. 대신 ___."}),
+   F("i3","ms","③ 명제 예고 · 20%",{rows:2,how:"핵심 명제를 그대로 말합니다. 결론에서 같은 문장을 반복합니다.",tpl:"오늘 말씀의 요지는 이것입니다. ___."}),
+   F("i4","ms","④ 본문 복귀 · 10%",{rows:2,how:"대지 순서를 한 문장으로 안내합니다.",tpl:"___이(가) 무엇을 ___했고, 어떤 순서로 ___했는지 본문을 따라가 보겠습니다.",ai:["introfb"]})],
+  alloc:"intro",
+  coach:{p:"파이퍼는 갈망으로 자주 시작한다. 이 세상 어떤 경험도 채우지 못하는 갈망(루이스), 약혼녀의 편지를 받으면 점심 생각이 사라지던 여름. 그리고 '내 논지는 이것이다'라고 서두에 명제를 밝힌다.",src:"Dangerous Duty 서문 · A Hunger for God 서론 · A Holy Ambition 1장",q:["청중이 오늘 아침 무엇에 목말라 이 자리에 왔는가?","어색한 연결을 서론에서 어떻게 '느끼게' 할 것인가?"],trap:"본문과 무관한 유머로 시작하기, 서론에서 대지를 다 말해 버리기."},
+  check(f,p){const t=len(f.i1)+len(f.i2)+len(f.i3)+len(f.i4),g=target(p).intro;return[[len(f.i1)&&len(f.i2)&&len(f.i3)&&len(f.i4),"4동작 모두 작성","비어 있는 동작이 있습니다"],[Math.abs(t-g)<=g*.2,"분량 "+t+"자 / 목표 "+g+"자","분량 "+t+"자 / 목표 "+g+"자"]]},
+  warn(f,p){return(p.f.s5_prop&&f.i3&&!f.i3.includes((p.f.s5_prop||"").slice(0,6)))?["명제 예고가 핵심 명제와 다른 말로 되어 있습니다. 결론에서 같은 문장으로 반복할 수 있게 맞추세요."]:[]}},
+ {phase:"원고",id:"body",title:"대지 원고",eyebrow:"공정 6 · 원고",
+  lede:"모든 대지는 같은 여섯 동작으로 씁니다. 진술 → 증명 → 설명 → 반론 → 예시 → 환희·적용.",
+  todo:["동작마다 문형으로 시작","목표 글자 수 맞추기","적용은 질문으로"],
+  custom:"body",
+  coach:{p:"적용을 의무로 끝내지 않는다. 그 진리가 얼마나 좋은지 감탄하게 한 뒤에 묻는다. 예배가 약한 이유는 사람들이 받으러 와서가 아니라, 설교자가 그들이 굶주린 대상인 하나님을 보여 주지 못해서다.",src:"Dangerous Duty 6장",q:["② 증명에서 청중이 성경을 보고 있게 만드는가?","④ 반론을 일부러 약하게 만들지 않았는가?","⑤ 예화의 주인공이 하나님인가?"],trap:"③ 설명이 길어져 ⑥ 환희·적용이 잘리는 것. 줄일 때는 ③부터 줄인다."},
+  check(f,p){const n=+f.s7_count||3,out=[];for(let i=1;i<=n;i++){let filled=0,t=0;for(let m=1;m<=6;m++){const v=f["d"+i+"_m"+m];if(len(v)>5)filled++;t+=len(v)}const g=target(p)["d"+i];out.push([filled===6&&Math.abs(t-g)<=g*.2,"대지 "+i+": 6동작 · "+t+"/"+g+"자","대지 "+i+": "+filled+"/6동작 · "+t+"/"+g+"자"])}return out},
+  warn(f){const n=+f.s7_count||3,w=[];for(let i=1;i<=n;i++){const a=f["d"+i+"_m6"]||"";if(a&&!/\?/.test(a))w.push("대지 "+i+" 적용에 질문이 없습니다(패턴 15).");if(len(f["d"+i+"_m5"])>RATE*1.2)w.push("대지 "+i+" 예시가 1분을 넘습니다("+len(f["d"+i+"_m5"])+"자).")}return w}},
+ {phase:"원고",id:"apply",title:"적용 · 결론 · 기도",eyebrow:"공정 6 · 원고",
+  lede:"적용 매트릭스에서 2–3칸만 채웁니다. 결론은 서론의 명제를 같은 문장으로 반복하고, 명제를 기도로 바꿉니다.",
+  todo:["매트릭스 2–3칸","적용 질문 1–3개","은혜·초청 문장, 명제 반복, 기도"],
+  custom:"apply",
+  coach:{p:"적용의 시금석은 하나다. 이 적용은 하나님을 더 큰 보화로 보이게 하는가, 아니면 내 노력을 더 커 보이게 하는가? 또 예배와 설교를 헌금·출석·프로그램의 수단으로 쓰는 순간 예배는 사라진다.",src:"Dangerous Duty 4장 · 6장",q:["이 적용을 행한 사람은 하나님을 칭찬하게 되는가, 자기를 칭찬하게 되는가?","기쁨이 없는 성도를 위한 한 문장이 들어 있는가?"],trap:"다섯 칸을 다 채우는 것. 한 설교에 2–3칸이면 충분하다."},
+  check(f,p){let c=0;MX_ROWS.forEach((_,r)=>MX_COLS.forEach((_,k)=>{if(len(f["mx_"+r+"_"+k])>3)c++}));const q=lines(f.s10_q).length;return[[c>=2&&c<=3,"매트릭스 "+c+"칸",c<2?"매트릭스를 2칸 이상 채우세요":"매트릭스가 "+c+"칸입니다. 2–3칸으로 줄이세요"],[q>=1&&q<=3,"적용 질문 "+q+"개","적용 질문은 1–3개로 고르세요 · 지금 "+q+"개"],[len(f.s10_concl)>5&&(f.s10_concl||"").trim()===(p.f.s5_prop||"").trim(),"결론이 핵심 명제와 같은 문장","결론 명제를 핵심 명제와 같은 문장으로 맞추세요"],[len(f.s10_grace)>30&&!/___/.test(f.s10_grace),"은혜·초청 문장 작성","기쁨 없는 성도와 불신자를 위한 문장을 쓰세요"],[len(f.s10_prayer)>30,"결론 기도 작성","결론 기도를 쓰세요"]]},
+  warn(f){const all=Object.keys(f).filter(k=>k.startsWith("mx_")).map(k=>f[k]).join(" ");const n=(all.match(/해야/g)||[]).length;return n>=3?["적용에 '해야'가 "+n+"번 나옵니다. 감탄과 질문으로 바꿀 수 있는지 보세요."]:[]}},
+ {phase:"검증",id:"verify",title:"검증과 채점",eyebrow:"공정 7 · 1.5시간",
+  lede:"자동 분석과 실측 낭독 시간을 확인하고, 루브릭 8항목을 스스로 채점합니다. AI 평가는 내 채점 뒤에 비교용으로 받습니다. 40점 중 32점 이상, 그리고 목회적 점검 4문을 모두 통과하면 강단에 오릅니다.",
+  todo:["자동 분석과 실측 시간","자가 채점 후 AI 평가와 비교","3패스 · 목회 점검 · 강단 전 5문"],
+  custom:"verify",
+  coach:{p:"고후 2:17의 다섯 시험. 말씀을 팔아먹지 않는가, 순전함으로, 하나님께 받은 것으로, 하나님 앞에서, 그리스도 안에서 말하는가.",src:"A Holy Ambition 7장",q:["원고에서 내가 믿지 않거나 맛보지 않은 문장은?","사람의 평가보다 하나님의 평가를 두려워하는가?"],trap:"점수를 맞추려고 원고를 고치는 것. 점수는 진단이지 목표가 아니다."},
+  check(f){const s=RUBRIC.reduce((a,_,i)=>a+(+f["rb"+i]||0),0),n=RUBRIC.filter((_,i)=>f["rb"+i]).length,m=+f.minutes||35,tm=+f.v_time;return[[n===8,"루브릭 8항목 채점","채점 "+n+"/8"],[s>=32,"총점 "+s+"/40 · 강단 기준 통과","총점 "+s+"/40 · 기준 32점"],[tm>0&&Math.abs(tm-m)<=m*.1,"실측 "+(tm||"?")+"분 · 목표 "+m+"분",tm?"실측 "+tm+"분 · 목표 "+m+"분 ±10%를 벗어남":"소리 내 읽은 시간을 재어 적으세요"],[(f.v_pastoral||[]).length===4,"목회적 점검 4문 통과","목회적 점검 "+(f.v_pastoral||[]).length+"/4"],[(f.v_pass||[]).length===3,"수정 3패스 완료","수정 패스 "+(f.v_pass||[]).length+"/3"],[(f.v_five||[]).length===5,"강단 전 5문 통과","강단 전 5문 "+(f.v_five||[]).length+"/5"]]}},
+ {phase:"검증",id:"final",title:"완성 원고",eyebrow:"출력",
+  lede:"모든 공정의 원고 칸을 순서대로 조립했습니다. 복사해서 문서 편집기에 붙여 넣으세요.",
+  todo:["소리 내 끝까지 읽기","시간 재기","마지막 기도를 먼저 드리기"],
+  custom:"final",
+  coach:{p:"신학의 결론은 정보가 아니라 경배다. 그리스도를 맛보지 않았다면 그리스도를 제대로 본 것이 아니며, 맛보지 않은 실재는 전달되지 않는다.",src:"Seeing and Savoring Jesus Christ 서문 · 후기",q:["원고를 소리 내 끝까지 읽었는가?","마지막 기도를 내가 먼저 드렸는가?"],trap:"원고를 강단에서 처음 소리 내어 읽는 것."},
+  check(f,p){const t=manuscriptLen(p),g=target(p).total;return[[t>0,"원고 "+t+"자","원고가 비어 있습니다"],[Math.abs(t-g)<=g*.1,"목표 대비 "+Math.round(t/g*100)+"%","목표 대비 "+(g?Math.round(t/g*100):0)+"% · ±10% 권장"]]}},
+ {phase:"복기",id:"post",title:"강단 후 복기",eyebrow:"주일 저녁 · 20분",
+  lede:"설교한 당일 저녁에 씁니다. 평가가 아니라 다음 설교를 위한 기록이고, 설교자의 영혼을 돌보는 시간입니다.",
+  todo:["무엇이 들렸는지 한 줄","다음에 바꿀 것 한 가지","설교자 자신의 기도"],
+  fields:[
+   F("p1_landed","area","들린 것 — 회중이 반응한 지점",{rows:3,how:"박수나 칭찬이 아니라 '얼굴이 바뀐 순간', 예배 후 질문, 눈물, 침묵을 적습니다. 어떤 대지와 어떤 동작에서였는지.",tpl:"___대지 ___동작에서 ___. 예배 후 ___이(가) ___라고 물었다."}),
+   F("p2_missed","area","빠진 것 — 준비와 달랐던 지점",{rows:3,how:"준비 원고와 실제 강단의 차이. 건너뛴 부분, 즉흥으로 덧붙인 말, 시간 초과를 적습니다.",tpl:"___은(는) 건너뛰었다. ___은(는) 원고에 없던 말이었다. 시간은 ___분."}),
+   F("p3_change","text","다음 설교에 바꿀 한 가지",{how:"딱 하나만 적습니다. 두 개 이상이면 아무것도 안 바뀝니다.",tpl:"다음 설교에서는 ___만 바꾸겠다."}),
+   F("p4_soul","area","설교자 자신의 기도",{hint:"칭찬에 들뜨거나 비판에 가라앉은 마음을 하나님 앞에 둡니다.",rows:3,how:"설교 후 자랑과 자기연민은 둘 다 교만입니다(Dangerous Duty 4장). 오늘 내 마음이 어느 쪽으로 기울었는지 정직하게 적고, 그리스도의 충분함으로 돌아갑니다.",tpl:"오늘 나는 ___ 때문에 ___했다. 주님, ___.",noai:"설교자 자신의 기도입니다."}),
+   F("p5_care","checks","목회적 후속",{opts:["설교 중 언급한 고난·질병·죽음 사례의 당사자나 유가족에게 미리 양해를 구했거나, 이번 주에 연락한다","예배 후 질문한 사람에게 이번 주 안에 답한다","이 본문의 핵심 명제를 주중 소그룹·심방 대화에 한 번 이상 연결한다"]})],
+  coach:{p:"파이퍼는 설교자의 자랑과 자기연민을 같은 뿌리의 두 가지로 본다. 자랑은 성공에 대한 교만의 반응이고 자기연민은 고난에 대한 교만의 반응이다. 설교가 잘되었든 못되었든, 설교자가 돌아갈 자리는 같다. 그리스도가 보화라는 사실이다.",src:"Dangerous Duty 4장 · 빌 1:20–21",q:["오늘 회중이 하나님을 더 크게 보았는가, 설교자를 더 크게 보았는가?","내 마음은 지금 자랑 쪽인가 자기연민 쪽인가?"],trap:"복기를 건너뛰는 것, 또는 복기를 자책으로 바꾸는 것."},
+  check(f){return[[len(f.p1_landed)>10,"들린 것 기록","들린 것을 적으세요"],[len(f.p3_change)>3&&!/___/.test(f.p3_change),"바꿀 한 가지 지정","다음에 바꿀 한 가지를 정하세요"],[len(f.p4_soul)>10&&!/___/.test(f.p4_soul),"설교자 기도 기록","설교자 자신의 기도를 쓰세요"]]}}
+];
+const STEP_AI={post:["free"],setup:["context"],bound:["context","literary","background"],words:["lang","grammar","versions","questions"],odd:["oddcands","grammar"],flow:["flow","grammar"],reality:["theology","redemptive","parallels","background","propcheck"],savor:["meditate","commentary","tradition","tools"],structure:["structure"],intro:["contact","introfb"],body:["proof","objection","illustration","parallels","pointfb"],apply:["appq"],verify:["rubricai"],final:["rubricai"]};
+
+/* ================= 분량 ================= */
+function target(p){const m=+(p.f.minutes)||35,n=+(p.f.s7_count)||3,peak=+(p.f.s7_peak)||Math.min(2,n);
+  const total=Math.max(0,Math.round((m-2)*RATE));
+  const intro=Math.round(total*4/33),concl=Math.round(total*3/33),prayer=Math.round(total*1/33);
+  const body=total-intro-concl-prayer,base=body/(n+0.125),t={total,intro,concl,prayer};
+  for(let i=1;i<=n;i++)t["d"+i]=Math.round(i===peak?base*1.125:base);return t}
+
+/* ================= 상태 ================= */
+let store={projects:{},order:[],current:null,step:{},guide:true,side:"coach"};
+function load(){try{const s=JSON.parse(localStorage.getItem(LS)||"null");if(s&&s.projects)store=Object.assign(store,s)}catch(e){}}
+let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(LS,JSON.stringify(store))}catch(e){}},300)}
+function cur(){return store.projects[store.current]}
+function newProject(f){const id=uid();store.projects[id]={id,f:Object.assign({minutes:35,s7_count:"3",s7_peak:"2",s6_gap:5},f||{}),bodyTab:1,notes:[]};store.order.unshift(id);store.current=id;store.step[id]=0;save();return id}
+
+/* ================= 예시 데이터 · 마 13:44 (창작 예문) ================= */
+const SAMPLE={
+ title:"기뻐서 다 팔았다 (예시)",ref:"마태복음 13:44",audience:"주일 오전 장년 예배, 새신자 포함",minutes:35,
+ passage:"천국은 마치 밭에 감추인 보화와 같으니 사람이 이를 발견한 후 숨겨 두고 기뻐하며 돌아가서 자기의 소유를 다 팔아 그 밭을 사느니라 (개역개정)",
+ s1_bound:"이 단락은 '천국은 마치 ~와 같으니'로 시작하고 '그 밭을 사느니라'로 끝난다. 앞 단락(36–43절)은 가라지 비유 해석, 뒤 단락(45–46절)은 진주 비유다. 그래서 44절 한 절을 한 단위로 보되, 45–46절을 짝으로 함께 읽는다.",
+ s1_context:"앞(13:36–43): 집에서 제자들에게만 가라지 비유를 풀어 주심\n뒤(13:45–46): 진주 장사 — 찾다가 발견, 가서 다 팔아 삼\n같은 장의 반복어: '감추인'(35, 44절), '천국은 ~와 같으니'\n책 전체 흐름: 13장 천국 비유 묶음, 10–17절 '비밀은 주어진 자에게'\n청중(원래 듣던 사람): 집 안의 제자들(36절)",
+ s1_read:["본문을 소리 내어 10회 읽었다","앞뒤 한 장씩 통독했다"],
+ s2_verbs:"주동사: 숨겨 두고(부정과거) → 가서·팔아·산다(현재형)\n분사: 발견한 후(부정과거 분사)\n관찰: 본문은 마지막 세 동작을 현재형으로 말해 장면을 눈앞에 세운다.",
+ s2_conj:"'기뻐하며'(원문 ἀπὸ τῆς χαρᾶς αὐτοῦ, '그의 기쁨으로부터') — 관계: 출처",
+ s2_repeat:"'감추인' 2회(35절, 44절)\n'자기의 소유를 다'(πάντα ὅσα ἔχει) — 일부가 아닌 전부",
+ s2_trans:"44절: 개역개정 '기뻐하며' / ESV 'in his joy' / 직역 '그의 기쁨으로부터'. 우리말은 동시 동작처럼 들리지만 원문은 출처·원인에 가깝다.",
+ s2_bias:"나는 이 본문이 '더 헌신하라'고 말한다고 생각해 왔다.\n보화를 '산다'는 말이 구원을 값 주고 산다는 뜻처럼 들려 불편했다.",
+ s2_q:"왜 보화는 '감추어져' 있었나?\n왜 다시 숨겼나?\n숨긴 행위는 정직한가? (알레고리 함정 주의)\n기쁨은 언제 생겼나?\n기쁨과 판매 중 무엇이 먼저인가?\n'다'는 문자적 전부인가?\n이 사람은 손해를 계산했나?\n45절 상인과 무엇이 같고 다른가?\n발견은 우연인가 추구인가?\n천국을 '산다'는 것은 공로인가?\n왜 보화가 아니라 '밭'을 샀나?\n이 비유를 들은 제자들은 무엇을 버린 사람들이었나?\n13:44는 13:35의 '감추인 것'과 어떻게 연결되나?\n이 비유의 청중은 누구인가(36절: 집, 제자들)?\n오늘 청중에게 '밭'은 무엇인가?",
+ s3_odd:"\"기뻐하며 돌아가서 자기의 소유를 다 팔아\" — 기쁨이 희생보다 먼저 나온다.",
+ s3_why:"정상이라면 '다 팔고 나서 기뻐했다'여야 한다. 그런데 본문은 '기쁨으로부터 가서 팔았다'고 말한다. 원문 ἀπὸ τῆς χαρᾶς가 이를 확인한다.",
+ s3_myth:"우리는 흔히 '신앙생활은 손해이고 포기의 연속'이라고 생각한다.",
+ s4_flow:"44a | 천국은 감추인 보화와 같다 | 주명제\n44b | 사람이 발견하고 숨겼다 | 시간\n44c | 그의 기쁨으로부터 | 출처\n44d | 가서 소유를 다 판다 | 결과\n44e | 그 밭을 산다 | 목적",
+ s4_main:"판다 · 산다",
+ s5_god:"이 본문에서 하나님은 감추인 나라를 은혜로 발견하게 하시는 분이다(44a–b, 참고 13:11, 35).",
+ s5_man:"인간은 작은 소유를 큰 것으로 여기며 너무 쉽게 만족하는 상태로 드러난다(44d의 '자기의 소유').",
+ s5_history:"이미 임했으나 아직 완성되지 않은 나라 사이",
+ s5_parallel:"빌 3:8 · 시 16:11",
+ s5_christ:"이 본문이 요구하는 '전부를 기쁨으로 내놓음'을 그리스도는 십자가에서 먼저 이루셨다. 그는 '그 앞에 있는 기쁨을 위하여 십자가를 참으사'(히 12:2) 자기 생명을 다 내놓고 우리를 사셨다(마 20:28). 그래서 우리가 밭을 사는 것은 값을 지불하는 공로가 아니라, 이미 값 주고 사신 분이 보화로 보이기 시작한 사람의 반응이다.",
+ s5_guard:"고후 6:10 '근심하는 자 같으나 항상 기뻐하고'가 '기쁨 없으면 신앙이 아니다'라는 오해를 막아 준다.",
+ s5_prop:"천국의 가치를 본 사람은 전부를 기쁨으로 내놓는다",
+ s5_gs:"하나님은 우리가 그분 나라를 전 재산보다 귀히 여겨 기쁨으로 내놓을 때 영광을 받으신다.",
+ s5_c:["본문 어휘로 증명된다","하나님(그리스도)이 문장의 주어이거나 중심이다","다른 본문에 그대로 붙이면 어색하다(충분히 구체적이다)"],
+ s6_emo:["기쁨","경외","회개"],s6_gap:6,
+ s6_steps:["기쁨 없음을 죄로 고백했다","순종의 기쁨 회복을 구했다","기쁨이 다시 일기를 바라며 할 수 있는 순종을 했다"],
+ s6_note:"이번 주 나는 그리스도보다 사람들의 인정에 더 만족했다.\n이 본문은 내게 '네가 포기했다고 말하는 것들은 네가 본 보화가 작다는 고백'이라고 말한다.\n내가 먼저 회개할 것은 설교 준비 중에도 휴대폰을 내려놓기 아까워한 마음이다.",
+ s6_comm:"일부 해석은 '사람'을 그리스도, '밭'을 세상으로 읽는다(그리스도가 모든 것을 내주고 교회를 사심). 나는 13장 비유들이 듣는 자의 반응을 다루고 짝 비유의 상인도 구매자라는 점 때문에 제자의 반응으로 읽는다.",
+ s7_type:"three",s7_count:"3",s7_peak:"2",
+ d1_title:"발견 — 찾아오는 은혜",d1_ref:"44a–b",
+ d2_title:"기쁨 — 순서가 바꾸는 것",d2_ref:"44c",
+ d3_title:"다 팖 — 희생 아닌 희생",d3_ref:"44d–e",
+ i1:"신앙생활 하면서 손해 본다고 느낀 적 있으십니까? 주일 아침 늦잠, 회식 자리의 술잔, 남들 다 하는 투자. 우리는 그것들을 '포기'했다고 말합니다. 그리고 포기한 목록이 길어질수록 왠지 신앙이 무거워집니다.",
+ i2:"그런데 오늘 예수님 비유 속 이 사람은 전 재산을 팔고도 '포기'라는 말을 한 번도 쓰지 않습니다. 대신 마태는 판매 앞에 한 단어를 붙여 놓았습니다. '기뻐하며.'",
+ i3:"오늘 말씀의 요지는 이것입니다. 천국의 가치를 본 사람은 전부를 기쁨으로 내놓는다.",
+ i4:"이 사람이 무엇을 발견했고, 어떤 순서로 움직였고, 무엇을 팔았는지 본문을 따라가 보겠습니다.",
+ d1_m1:"첫째, 이 사람은 보화를 찾아낸 것이 아니라 발견했습니다.",
+ d1_m2:"본문은 '사람이 이를 발견한 후'라고 말합니다. 보물 지도를 들고 나간 사람이 아닙니다. 바로 다음 45절의 진주 장사는 좋은 진주를 '구하는' 사람이었지만, 44절의 이 사람은 그냥 밭에 있다가 무언가에 걸렸습니다.",
+ d1_m3:"예수님은 왜 두 비유를 나란히 두셨을까요? 천국은 열심히 찾는 사람에게도, 전혀 기대하지 않던 사람에게도 발견됩니다. 그러나 두 경우 모두 보화는 감추어져 있었고, 보이게 된 것은 은혜입니다. 13장 35절은 예수님이 '창세부터 감추인 것'을 드러내신다고 말합니다.",
+ d1_m4:"'그러면 저는 가만히 있으면 됩니까?' 아닙니다. 상인은 찾았습니다. 다만 찾는 사람도 결국 '발견'합니다. 찾는 수고는 우리 몫이지만, 눈이 열리는 것은 하나님의 몫입니다.",
+ d1_m5:"밭을 갈다가 쟁기 끝에 무언가 걸리는 소리를 들은 농부를 떠올려 보십시오. 그는 그 땅을 십 년 넘게 갈았습니다. 보화는 늘 거기 있었습니다. 달라진 것은 그날 쟁기 끝에 걸렸다는 것뿐입니다.",
+ d1_m6:"얼마나 놀라운 은혜입니까. 하나님은 보물을 찾을 자격이 없는 사람의 밭에 보물을 묻어 두셨습니다. 여러분은 언제 처음으로 쟁기 끝에 걸리는 그 소리를 들으셨습니까?",
+ d2_m1:"둘째, 이 사람은 기뻐서 팔았습니다. 희생이 기쁨을 낳은 게 아니라, 기쁨이 희생을 낳았습니다.",
+ d2_m2:"본문을 다시 보십시오. '발견한 후 숨겨 두고 기뻐하며 돌아가서 자기의 소유를 다 팔아.' '기뻐하며'가 '팔아' 앞에 있습니다. 마태가 쓴 헬라어는 더 분명합니다. 직역하면 '그의 기쁨으로부터 그는 간다, 그리고 판다'입니다.",
+ d2_m3:"우리는 보통 반대로 생각합니다. 먼저 참고, 먼저 내려놓으면 언젠가 기쁨이 따라온다고요. 그러나 두 비유 모두에서 판단 기준은 가격 비교입니다. 손에 든 모든 것과 발견한 하나를 저울에 올려 보니 저울이 한쪽으로 확 기운 것입니다. 바울도 같은 저울을 썼습니다. '모든 것을 해로 여김은 내 주 그리스도 예수를 아는 지식이 가장 고상하기 때문이라.'",
+ d2_m4:"'목사님, 저는 그 기쁨이 없는데요. 기쁨이 없으면 안 팔아도 됩니까?' 대답은 둘 다 '아니요'입니다. 기쁨이 없다고 순종을 멈추지도 않고, 기쁨 없는 순종을 정상이라 부르지도 않습니다. 기쁨 없는 마음을 고백하고, 회복을 구하고, 기쁨이 다시 불붙기를 바라며 지금 할 수 있는 순종을 하십시오.",
+ d2_m5:"결혼을 앞둔 청년이 반지를 사려고 1년 동안 적금을 붓습니다. 친구가 '요즘 커피도 못 마시고 고생한다'고 하자 그는 웃습니다. '고생은 무슨, 나 지금 제일 행복해.' 커피를 못 마시는 건 사실이지만, 그는 그것을 희생이라 부르지 않습니다.",
+ d2_m6:"하나님은 이를 악물고 버티는 신하를 찾으시는 게 아니라, 보화를 발견하고 들떠서 집으로 뛰어가는 사람을 찾으십니다. 그 사람이 하나님을 가장 크게 보이게 하기 때문입니다. 내가 내려놓은 것들을 떠올릴 때, 내 얼굴은 손해 본 사람의 얼굴입니까, 보물을 찾은 사람의 얼굴입니까?",
+ d3_m1:"셋째, 이 사람은 전부를 팔았지만 그것을 희생이라 부르지 않았습니다.",
+ d3_m2:"'자기의 소유를 다 팔아.' 원문은 '그가 가진 모든 것'입니다. 일부를 떼어 헌금한 것이 아닙니다. 그리고 그가 산 것은 보화가 아니라 '그 밭'입니다. 보화가 묻힌 자리 전체를 자기 것으로 삼았습니다.",
+ d3_m3:"아프리카에서 평생을 보낸 리빙스턴은 케임브리지 학생들 앞에서 자신은 희생한 적이 없다고 말했습니다. 짐 엘리엇은 지킬 수 없는 것을 주고 잃을 수 없는 것을 얻는 자는 바보가 아니라고 썼습니다. 손양원 목사가 아들을 죽인 청년을 양자로 삼을 수 있었던 것도 손익 계산이 아니라 더 큰 보화를 보았기 때문입니다.",
+ d3_m4:"'그건 특별한 사람들 이야기 아닙니까?' 예수님은 이 비유를 특별한 사람에게 하지 않으셨습니다. 집 안에 있던 평범한 제자들에게 하셨습니다(36절).",
+ d3_m5:"로또 1등 용지를 쥔 사람이 은행 가는 길에 버스비 1,500원이 아깝다고 말하지 않습니다. 우리가 헌신을 아까워한다면, 문제는 헌신의 크기가 아니라 우리가 본 보화의 크기입니다.",
+ d3_m6:"주일학교 친구들, 제일 아끼는 장난감과 놀이공원 1년 자유이용권을 바꾸자고 하면 울까요, 뛸까요? 예수님이 그런 분이에요. 여러분, 이번 주 내가 '아까워서' 붙들고 있는 것 하나는 무엇입니까?",
+ mx_2_1:"무덤덤해진 마음을 하나님께 정직하게 고백하기",mx_2_2:"기쁨 없음 3단계(고백·간구·행함)를 이번 주 한 가지에 실행",mx_1_0:"기쁨은 순종의 결과가 아니라 출발점이다",
+ s10_q:"내가 '포기했다'고 말해 온 것 중, 사실은 아직 보화를 못 본 증거인 것은 무엇인가?\n이번 주 기쁨이 없다면 — 고백했는가, 구했는가, 그럼에도 행했는가?",
+ s10_concl:"천국의 가치를 본 사람은 전부를 기쁨으로 내놓는다",
+ s10_last:"내 만족은 지금 그리스도를 크게 보이게 합니까, 작게 보이게 합니까?",
+ s10_grace:"오늘 이 말씀이 무겁게만 들리는 분이 계시다면, 기억하십시오. 밭을 산 사람은 보화를 만든 사람이 아니라 발견한 사람입니다. 그리고 그 보화를 밭에 묻어 두신 분, 우리를 사기 위해 자기 생명을 다 내놓으신 분은 그리스도이십니다. 아직 그분을 모르시는 분께 드리는 말씀은 하나입니다. 오늘 쟁기 끝에 무언가 걸렸다면, 그것이 은혜입니다. 그 자리에 멈춰 서십시오.",
+ s10_prayer:"주님, 우리는 너무 쉽게 만족하며 밭 위의 잡초를 끌어안고 살았습니다. 쟁기 끝에 걸린 주의 나라를 보게 하소서. 기뻐서 팔게 하소서. 우리가 주 안에서 가장 만족할 때 주께서 가장 영광 받으심을 우리 삶으로 증명하게 하소서. 예수 그리스도의 이름으로 기도합니다. 아멘.",
+ rb0:5,rb1:4,rb2:4,rb3:5,rb4:4,rb5:4,rb6:4,rb7:3,v_time:34,
+ v_pastoral:["고난 중인 성도가 들어도 상처가 아니라 위로가 되도록 섭리를 말했다('하나님이 하셨다'보다 '하나님이 다스리신다'로 시작)","회개의 부름과 은혜의 초청이 둘 다 있다 — 명령 뒤에 은혜가 따라온다","자랑하는 사람과 자기연민에 빠진 사람 둘 다에게 말을 건다","적용이 교회 프로그램·헌금·출석 홍보로 흐르지 않는다"],
+ p1_landed:"2대지 ④반론에서 '기쁨이 없으면 안 팔아도 됩니까?'를 말할 때 앞줄 여러 분의 얼굴이 바뀌었다. 예배 후 한 청년이 '기쁨이 없는 상태로 몇 년째인데 어떻게 하냐'고 물었다.",
+ p2_missed:"3대지 ③설명의 리빙스턴 부분을 시간 때문에 건너뛰었다. 원고에 없던 '우리 교회도…'라는 말을 덧붙였는데 불필요했다. 시간은 37분.",
+ p3_change:"다음 설교에서는 ③설명을 원고 단계에서 20% 줄이겠다.",
+ p4_soul:"오늘 나는 청년의 질문 때문에 설교가 '먹혔다'는 생각에 들떴다. 주님, 그 청년에게 보화를 보이신 분은 주님이시지 제가 아닙니다. 그 청년을 이번 주에 만나게 하시고, 제 마음은 주님의 충분함으로 돌려 주소서.",
+ v_pass:["본문 패스: 모든 주장 옆에 근거 절을 달았다","하나님 패스: '우리/여러분'이 5문장 넘게 이어지는 곳에 하나님 주어 문장을 넣었다"],v_five:[]
+};
+const exOf=k=>{const v=SAMPLE[k];if(v==null)return"";return Array.isArray(v)?v.join(" · "):String(v)};
+
+/* ================= 렌더: 레일·프로젝트 ================= */
+function stepState(p,i){const s=STEPS[i];if(!s.check)return 0;const r=s.check(p.f,p);const ok=r.filter(x=>x[0]).length;return ok===r.length?2:ok>0?1:0}
+function renderRail(){const p=cur(),si=store.step[p.id]||0;let h="",ph="",done=0;
+  STEPS.forEach((s,i)=>{if(s.phase!==ph){ph=s.phase;h+=`<div class="phase">${esc(ph)}</div>`}const st=stepState(p,i);if(st===2)done++;
+    h+=`<button class="step${i===si?" on":""}" data-go="${i}" aria-current="${i===si?"step":"false"}"><span class="dot ${st===2?"full":st===1?"half":""}">${st===2?"✓":i}</span><span class="t">${esc(s.title)}</span></button>`});
+  h+=`<div class="progress">완료 ${done}/${STEPS.length} 공정<div class="meter"><i style="width:${Math.round(done/STEPS.length*100)}%"></i></div></div>`;
+  $("#rail").innerHTML=h}
+function renderProjects(){$("#projSel").innerHTML=store.order.map(id=>{const p=store.projects[id];const n=(p.f.title||"제목 없음")+(p.f.ref?" · "+p.f.ref:"");return`<option value="${id}"${id===store.current?" selected":""}>${esc(n)}</option>`}).join("")}
+
+/* ================= 렌더: 따라 쓰기 안내 ================= */
+function guideHTML(d,isSample){
+  const ex=exOf(d.k),showEx=ex&&!isSample;
+  if(!d.how&&!d.tpl&&!d.ai&&!d.noai&&!showEx)return"";
+  let h=`<div class="guide">`;
+  if(d.how)h+=`<div class="how"><b>찾는 법</b>${esc(d.how)}</div>`;
+  if(showEx||d.tpl){h+=`<details class="ex"${store.guide?" open":""}><summary>${showEx?"예시 보기 · 마 13:44":"문형 보기"}</summary>`;
+    if(showEx)h+=`<div class="exbox">${esc(ex)}</div>`;
+    h+=`<div class="exacts">${d.tpl?`<button type="button" class="btn sm" data-tpl="${d.k}">문형으로 시작</button>`:""}${showEx&&d.type!=="checks"&&d.type!=="chips"?`<button type="button" class="btn sm ghost" data-copyex="${d.k}">예시를 칸에 복사</button>`:""}</div></details>`}
+  if(d.ai||d.noai)h+=`<div class="airow">${(d.ai||[]).map(m=>`<button type="button" class="aichip" data-ai="${m}" data-aitarget="${d.k}">AI · ${esc(AI[m].label)}</button>`).join("")}${d.noai?`<em class="noai">${esc(d.noai)}</em>`:""}</div>`;
+  return h+`</div>`}
+
+function fieldHTML(p,d){const f=p.f,k=d.k,v=f[k],type=d.type,isS=!!p.sample;
+  const lab=`<label class="l" for="f_${k}">${esc(d.label)}</label>${d.hint?`<span class="h">${esc(d.hint)}</span>`:""}`;
+  const G=guideHTML(d,isS);
+  if(type==="text")return`<div class="field">${lab}${G}<input type="text" id="f_${k}" data-k="${k}" value="${esc(v)}"></div>`;
+  if(type==="number")return`<div class="field" style="max-width:260px">${lab}<input type="number" id="f_${k}" data-k="${k}" min="10" max="90" value="${esc(v)}"></div>`;
+  if(type==="area"||type==="ms")return`<div class="field">${lab}${G}<textarea id="f_${k}" data-k="${k}" rows="${d.rows||3}" class="${type==="ms"?"ms":""}">${esc(v)}</textarea><div class="cnt" data-cnt="${k}">${len(v)}자</div></div>`;
+  if(type==="checks"){const arr=v||[];return`<div class="field"><span class="l">${esc(d.label)}</span><div class="checks">${d.opts.map((o,i)=>`<label><input type="checkbox" id="f_${k}_${i}" data-arr="${k}" value="${esc(o)}"${arr.includes(o)?" checked":""}><span>${esc(o)}</span></label>`).join("")}</div></div>`}
+  if(type==="chips"){const arr=v||[];return`<div class="field"><span class="l">${esc(d.label)}</span>${G}<div class="chips">${d.opts.map(o=>`<button type="button" class="chip${arr.includes(o)?" on":""}" data-chip="${k}" data-v="${esc(o)}" aria-pressed="${arr.includes(o)}">${esc(o)}</button>`).join("")}</div></div>`}
+  if(type==="range")return`<div class="field">${lab}<div style="display:flex;gap:12px;align-items:center"><input type="range" id="f_${k}" data-k="${k}" min="0" max="10" value="${esc(v??5)}" style="flex:1;accent-color:var(--accent)"><span class="cnt" style="margin:0;font-size:16px" data-cnt="${k}">${esc(v??5)}</span></div></div>`;
+  if(type==="flow")return`<div class="field">${lab}${G}<div class="chips" style="margin-bottom:8px">${REL.map(r=>`<button type="button" class="chip" data-ins="${k}" data-v=" | ${r}">${r}</button>`).join("")}</div><textarea id="f_${k}" data-k="${k}" rows="${d.rows}" style="font-family:var(--f-mono);font-size:13.5px" placeholder="44a | 천국은 감추인 보화와 같다 | 주명제">${esc(v)}</textarea></div>`;
+  if(type==="gs")return`<div class="field">${lab}${G}<textarea id="f_${k}" data-k="${k}" rows="2">${esc(v)}</textarea></div>`;
+  return""}
+
+function resultsHTML(p,s){if(!s.check)return"";const r=s.check(p.f,p),w=s.warn?s.warn(p.f,p):[];
+  return`<div class="checkbox-results" id="results" aria-live="polite">${r.map(x=>`<div class="res"><span class="pill ${x[0]?"ok":"warn"}">${x[0]?"통과":"보완"}</span><span>${esc(x[0]?x[1]:x[2])}</span></div>`).join("")}${w.map(x=>`<div class="res"><span class="pill bad">주의</span><span>${esc(x)}</span></div>`).join("")}</div>`}
+function allocHTML(p,keys){const t=target(p);return`<div class="alloc">${keys.map(k=>`<span>${k[0]} <b>${t[k[1]]}</b>자</span>`).join("")}<span>· 분당 ${RATE}자 기준</span></div>`}
+
+/* ================= 렌더: 구조 ================= */
+function structureHTML(p){const f=p.f,n=+f.s7_count||3,isS=!!p.sample;
+  let h=`<div class="field"><span class="l">구조 유형</span><div class="guide"><div class="how"><b>찾는 법</b>논리 흐름 공정의 관계를 봅니다. 근거·결과가 이어지면 3대지, 목적절이 겹겹이면 역순, 한 명제를 여러 본문이 증언하면 연대기 행진, 목록형이면 번호 관찰.</div><div class="airow"><button type="button" class="aichip" data-ai="structure">AI · 구조 3안</button></div></div><div class="cards">${STRUCT.map(o=>`<button type="button" class="card${f.s7_type===o[0]?" on":""}" data-card="s7_type" data-v="${o[0]}" aria-pressed="${f.s7_type===o[0]}"><strong>${esc(o[1])}</strong><span>${esc(o[2])}</span></button>`).join("")}</div></div>`;
+  h+=`<div class="field" style="max-width:200px"><label class="l" for="f_s7_count">대지 수</label><select id="f_s7_count" data-k="s7_count">${["2","3","4"].map(o=>`<option${String(f.s7_count)===o?" selected":""}>${o}</option>`).join("")}</select></div>`;
+  h+=`<div class="field"><span class="l">대지 제목(명사구)과 근거 절</span><div class="guide"><div class="how"><b>찾는 법</b>뼈대 동사(공정 3)마다 하나의 대지를 만듭니다. 제목은 15자 안팎의 명사구, 근거는 반절 단위.</div>${!isS?`<details class="ex"${store.guide?" open":""}><summary>예시 보기 · 마 13:44</summary><div class="exbox">1. ${esc(SAMPLE.d1_title)} (${SAMPLE.d1_ref})\n2. ${esc(SAMPLE.d2_title)} (${SAMPLE.d2_ref}) ← 정점\n3. ${esc(SAMPLE.d3_title)} (${SAMPLE.d3_ref})</div></details>`:""}</div><div class="fields" style="gap:10px">`;
+  for(let i=1;i<=n;i++)h+=`<div class="row2"><div class="field"><label class="l" for="f_d${i}_title">대지 ${i}</label><input type="text" id="f_d${i}_title" data-k="d${i}_title" value="${esc(f["d"+i+"_title"])}" placeholder="예: 발견 — 찾아오는 은혜"></div><div class="field"><label class="l" for="f_d${i}_ref">근거 절</label><input type="text" id="f_d${i}_ref" data-k="d${i}_ref" value="${esc(f["d"+i+"_ref"])}" placeholder="예: 44a–b"></div></div>`;
+  h+=`</div></div>`;
+  const o=[];for(let i=1;i<=n;i++)o.push(String(i));
+  h+=`<div class="field" style="max-width:320px"><label class="l" for="f_s7_peak">정점 대지</label><span class="h">어색한 연결이 풀리는 대지. 가장 길게 배분됩니다.</span><select id="f_s7_peak" data-k="s7_peak">${o.map(x=>`<option value="${x}"${String(f.s7_peak)===x?" selected":""}>대지 ${x}${f["d"+x+"_title"]?" · "+esc(f["d"+x+"_title"]):""}</option>`).join("")}</select></div>`;
+  return`<div class="fields">${h}</div>`}
+
+/* ================= 렌더: 대지 ================= */
+function bodyHTML(p){const f=p.f,n=+f.s7_count||3,tab=Math.min(p.bodyTab||1,n),t=target(p),isS=!!p.sample;
+  let h=`<div class="tabs" role="tablist">`;for(let i=1;i<=n;i++)h+=`<button class="tab${i===tab?" on":""}" role="tab" aria-selected="${i===tab}" data-tab="${i}">대지 ${i}${+f.s7_peak===i?" · 정점":""}</button>`;h+=`</div>`;
+  const tot=[1,2,3,4,5,6].reduce((a,m)=>a+len(f["d"+tab+"_m"+m]),0);
+  h+=`<p style="margin:-4px 0 6px;font-family:var(--f-display);font-size:18px">${esc(f["d"+tab+"_title"]||"대지 "+tab+" 제목을 '구조 선택'에서 정하세요")} <span class="flag">${esc(f["d"+tab+"_ref"]||"")}</span></p>`;
+  h+=`<div class="alloc"><span>목표 <b>${t["d"+tab]}</b>자</span><span>현재 <b id="bodyTot">${tot}</b>자</span><span>≈ ${(t["d"+tab]/RATE).toFixed(1)}분</span></div>`;
+  h+=`<div class="airow" style="margin-bottom:14px"><span class="noai">이 대지 전체:</span><button type="button" class="aichip" data-ai="pointfb">AI · 대지 원고 피드백</button></div><div class="fields">`;
+  const exTab=Math.min(tab,3);
+  MOVES.forEach((m,i)=>{const k="d"+tab+"_m"+(i+1),g=Math.round(t["d"+tab]*m[2]),v=f[k],ex=SAMPLE["d"+exTab+"_m"+(i+1)];
+    const aiFor=[[],["proof"],["parallels"],["objection"],["illustration"],[]][i];
+    h+=`<div class="move"><div class="n">${"①②③④⑤⑥"[i]}</div><div class="field"><label class="l" for="f_${k}">${m[0]} <span class="flag">${Math.round(m[2]*100)}% · ${g}자</span></label><span class="h">${esc(m[1])}</span>
+    <div class="guide"><div class="how"><b>쓰는 법</b>${esc(m[4])}</div><details class="ex"${store.guide?" open":""}><summary>${isS?"문형 보기":"예시 보기 · 마 13:44 대지 "+exTab}</summary>${isS?"":`<div class="exbox">${esc(ex)}</div>`}<div class="exacts"><button type="button" class="btn sm" data-tplraw="${k}" data-raw="${esc(m[3])}">문형으로 시작</button></div></details>${aiFor.length?`<div class="airow">${aiFor.map(a=>`<button type="button" class="aichip" data-ai="${a}" data-aitarget="${k}">AI · ${esc(AI[a].label)}</button>`).join("")}</div>`:""}</div>
+    <textarea class="ms" id="f_${k}" data-k="${k}" data-goal="${g}" rows="${i===2?6:3}">${esc(v)}</textarea><div class="cnt${len(v)>g*1.25?" over":""}" data-cnt="${k}">${len(v)} / ${g}자</div></div></div>`});
+  return h+`</div>`}
+
+/* ================= 렌더: 적용 ================= */
+function applyHTML(p){const f=p.f,isS=!!p.sample;let h=`<div class="field"><span class="l">적용 매트릭스</span><span class="h">청중 × 생각·감정·행동. 본문과 회중에 맞는 2–3칸만 채우세요.</span><div class="guide"><div class="how"><b>찾는 법</b>설정의 '청중'에서 줄을 고르고, 고백 노트(공정 5)에서 내가 먼저 부딪힌 지점을 칸으로 옮깁니다. 시금석: 이 적용이 하나님을 보화로 보이게 하는가?</div>${!isS?`<details class="ex"${store.guide?" open":""}><summary>예시 보기 · 마 13:44</summary><div class="exbox">새신자 × 생각: ${esc(SAMPLE.mx_1_0)}\n성숙한 성도 × 감정: ${esc(SAMPLE.mx_2_1)}\n성숙한 성도 × 행동: ${esc(SAMPLE.mx_2_2)}</div></details>`:""}</div><div class="matrix-wrap"><table class="mx"><thead><tr><th scope="col">청중</th>${MX_COLS.map(c=>`<th scope="col">${c}</th>`).join("")}</tr></thead><tbody>`;
+  MX_ROWS.forEach((r,ri)=>{h+=`<tr><th scope="row">${r}</th>`;MX_COLS.forEach((_,ci)=>{const k=`mx_${ri}_${ci}`,v=f[k];h+=`<td class="${len(v)>3?"filled":""}"><textarea aria-label="${r} ${MX_COLS[ci]}" id="f_${k}" data-k="${k}">${esc(v)}</textarea></td>`});h+=`</tr>`});
+  h+=`</tbody></table></div></div>`;
+  h+=fieldHTML(p,EXTRA.s10_q);
+  h+=allocHTML(p,[["결론","concl"],["기도","prayer"]]);
+  h+=`<div class="field"><label class="l" for="f_s10_concl">결론 ① 핵심 명제 반복</label><span class="h">서론과 같은 문장. 새 정보 금지.</span><div class="exacts" style="margin-bottom:6px"><button type="button" class="btn sm" data-copyprop="1">핵심 명제 가져오기</button></div><input type="text" id="f_s10_concl" data-k="s10_concl" value="${esc(f.s10_concl)}"></div>`;
+  h+=fieldHTML(p,EXTRA.s10_last);
+  h+=fieldHTML(p,EXTRA.s10_grace);
+  h+=`<div class="field"><label class="l" for="f_s10_prayer">결론 ③ 기도</label><span class="h">명제를 그대로 기도로 바꿉니다(패턴 17).</span><div class="guide">${!isS?`<details class="ex"${store.guide?" open":""}><summary>예시 보기 · 마 13:44</summary><div class="exbox">${esc(SAMPLE.s10_prayer)}</div></details>`:""}<div class="exacts"><button type="button" class="btn sm" data-pray="1">명제로 기도 초안 만들기</button></div></div><textarea class="ms" id="f_s10_prayer" data-k="s10_prayer" rows="5">${esc(f.s10_prayer)}</textarea><div class="cnt" data-cnt="s10_prayer">${len(f.s10_prayer)}자</div></div>`;
+  return`<div class="fields">${h}</div>`}
+const EXTRA={
+ s10_q:F("s10_q","area","적용 질문 1–3개",{hint:"한 줄에 하나. '해야 합니다'보다 '보이는가'를 묻습니다(패턴 15).",rows:3,how:"매트릭스에서 고른 칸을 질문으로 바꿉니다. AI 후보는 덧붙여지니 마음에 드는 1–3개만 남기고 지웁니다.",tpl:"내가 ___라고 말해 온 것 중, 사실은 ___인 것은 무엇인가?",ai:["appq"]}),
+ s10_last:F("s10_last","text","결론 ② 집에 가져갈 마지막 질문",{how:"설교 전체를 한 질문으로 압축합니다. 영광–만족 문장을 질문으로 뒤집으면 됩니다.",tpl:"내 만족은 지금 ___을(를) 크게 보이게 합니까, 작게 보이게 합니까?"}),
+ s10_grace:F("s10_grace","ms","결론 ②-1 기쁨 없는 성도와 아직 믿지 않는 분을 위한 문장",{hint:"명령 뒤에 반드시 은혜. 오늘 처음 온 사람이 들어도 복음이 들리게.",rows:3,how:"두 사람을 떠올립니다. 이 설교가 무겁게만 들린 지친 성도, 그리고 오늘 처음 와서 '천국'이 무엇인지 모르는 사람. 둘에게 그리스도가 먼저 하신 일을 한두 문장으로 말합니다.",tpl:"오늘 이 말씀이 무겁게만 들리는 분이 계시다면, 기억하십시오. ___은(는) 우리가 먼저 ___해서가 아니라, 그리스도께서 ___하셨기 때문에 ___. 아직 믿지 않으시는 분께는 ___."})
+};
+
+/* ================= 렌더: 검증·완성 ================= */
+function analyze(p){const text=manuscript(p,true),t=target(p),L=len(text);
+  const god=(text.match(/하나님|주님|그리스도|예수|성령|주께서|주의\s/g)||[]).length,man=(text.match(/우리는|우리가|여러분은|여러분이|나는|제가|저는/g)||[]).length;
+  const must=(text.match(/해야\s*합니다|해야\s*한다|하십시오/g)||[]).length,joy=(text.match(/기쁨|기뻐|만족|보화|즐거|감탄|영광/g)||[]).length;
+  const verse=(text.match(/\d+\s*절|\d+:\d+/g)||[]).length,q=(text.match(/\?/g)||[]).length;
+  const gospel=(text.match(/십자가|부활|은혜|용서|대속|죄 사함|속량|의롭다|그리스도께서|예수께서|피/g)||[]).length;
+  return{L,min:L/RATE+2,god,man,must,joy,verse,q,gospel,t}}
+function verifyHTML(p){const a=analyze(p),f=p.f,goal=a.t.total;
+  const st=(k,v,s,cls)=>`<div class="stat"><div class="k">${k}</div><div class="v">${v}</div><div class="s" style="color:var(--${cls})">${s}</div></div>`;
+  let h=`<div class="stats">`+
+   st("원고 분량",a.L.toLocaleString()+"자",`목표 ${goal.toLocaleString()}자 · ${Math.round(a.L/(goal||1)*100)}%`,Math.abs(a.L-goal)<=goal*.1?"ok":"warn")+
+   st("예상 시간",a.min.toFixed(1)+"분",`설교 ${f.minutes||35}분 · 낭독 2분 포함`,Math.abs(a.min-(+f.minutes||35))<=3?"ok":"warn")+
+   st("주어 · 하나님:사람",a.god+" : "+a.man,a.man>a.god*2?"하나님 패스 필요":"균형 양호",a.man>a.god*2?"warn":"ok")+
+   st("본문 인용 표시",a.verse+"회",a.verse>=5?"본문 종속성 양호":"절 언급을 늘리세요",a.verse>=5?"ok":"warn")+
+   st("질문형 문장",a.q+"개",a.q>=3?"질문형 적용 있음":"질문이 적습니다",a.q>=3?"ok":"warn")+
+   st("의무 어미 · 기쁨 어휘",a.must+" · "+a.joy,a.must>a.joy?"의무 편중 점검":"영광–만족 결합 양호",a.must>a.joy?"warn":"ok")+
+   st("복음 어휘(십자가·부활·은혜…)",a.gospel+"회",a.gospel>=4?"복음이 들립니다":a.gospel?"복음을 더 명시하세요":"복음 어휘가 없습니다 · 도덕 강연 위험",a.gospel>=4?"ok":a.gospel?"warn":"bad")+`</div>`;
+  h+=`<div class="field" style="max-width:420px"><label class="l" for="f_v_time">소리 내 읽은 실제 시간(분)</label><span class="h">원고를 끝까지 소리 내 읽고 스톱워치로 잰 시간. 예상치가 아니라 실측값을 적습니다.</span><input type="number" id="f_v_time" data-k="v_time" min="1" max="120" step="0.5" value="${esc(f.v_time)}"></div>`;
+  const s=RUBRIC.reduce((x,_,i)=>x+(+f["rb"+i]||0),0);
+  h+=`<div class="field"><span class="l">루브릭 자가 채점</span><div class="guide"><div class="how"><b>쓰는 법</b>먼저 스스로 채점합니다. 그다음 AI 루브릭 평가를 받아 내 점수와 2점 이상 차이 나는 항목만 다시 봅니다.</div><div class="airow"><button type="button" class="aichip" data-ai="rubricai">AI · 루브릭 평가(비교용)</button></div></div><div class="rub">`;
+  RUBRIC.forEach((r,i)=>{const v=+f["rb"+i]||0;h+=`<div class="rub-item"><div class="hd"><strong>${i+1}. ${r[0]}</strong><div class="scale" role="radiogroup" aria-label="${r[0]} 점수">${[1,2,3,4,5].map(n=>`<button type="button" role="radio" aria-checked="${v===n}" class="${v===n?"on":""}" data-rb="${i}" data-v="${n}">${n}</button>`).join("")}</div></div><div class="desc"><span><b>5</b> ${r[1]}</span><span><b>3</b> ${r[2]}</span><span><b>1</b> ${r[3]}</span></div></div>`});
+  h+=`</div></div><div class="total"><span class="v">${s}<span style="font-size:16px;color:var(--muted)">/40</span></span><span class="pill ${s>=32?"ok":"warn"}">${s>=32?"강단 기준 통과":"32점 미만 · 낮은 항목의 공정으로 돌아가세요"}</span></div>`;
+  h+=fieldHTML(p,F("v_pass","checks","수정 3패스",{opts:["본문 패스: 모든 주장 옆에 근거 절을 달았다","하나님 패스: '우리/여러분'이 5문장 넘게 이어지는 곳에 하나님 주어 문장을 넣었다","청중 패스: 소리 내 읽고 시간을 쟀다. 넘치면 ③설명부터 줄였다"]}));
+  h+=fieldHTML(p,F("v_pastoral","checks","목회적 점검 4문",{opts:["고난 중인 성도가 들어도 상처가 아니라 위로가 되도록 섭리를 말했다('하나님이 하셨다'보다 '하나님이 다스리신다'로 시작)","회개의 부름과 은혜의 초청이 둘 다 있다 — 명령 뒤에 은혜가 따라온다","자랑하는 사람과 자기연민에 빠진 사람 둘 다에게 말을 건다","적용이 교회 프로그램·헌금·출석 홍보로 흐르지 않는다"]}));
+  h+=fieldHTML(p,F("v_five","checks","강단에 오르기 전 5문 · 고후 2:17",{opts:["이 설교로 칭찬이 아니라 그리스도를 얻으려 한다","내가 믿지 않거나 맛보지 않은 문장이 원고에 없다","이 메시지는 내 의견을 성경으로 포장한 것이 아니다","사람의 평가보다 하나님의 평가를 두려워한다","확신과 용기를 그리스도와의 연합에서 얻는다"]}));
+  return`<div class="fields">${h}</div>`}
+function manuscript(p,plain){const f=p.f,n=+f.s7_count||3,P=[],add=s=>{if(s&&String(s).trim())P.push(String(s).trim())};
+  if(!plain){add(f.title?"『"+f.title+"』":"");add(f.ref?"본문: "+f.ref:"");add(f.passage);add("— 서론 —")}
+  add(f.i1);add(f.i2);add(f.i3);add(f.i4);
+  for(let i=1;i<=n;i++){if(!plain)add(`— ${i}. ${f["d"+i+"_title"]||"대지 "+i}${f["d"+i+"_ref"]?" ("+f["d"+i+"_ref"]+")":""} —`);for(let m=1;m<=6;m++)add(f["d"+i+"_m"+m])}
+  if(!plain)add("— 결론 —");add(f.s10_concl);
+  const q=lines(f.s10_q);if(q.length)add(q.join("\n"));add(f.s10_last);add(f.s10_grace);
+  if(!plain)add("— 기도 —");add(f.s10_prayer);
+  return P.join("\n\n")}
+function manuscriptLen(p){return len(manuscript(p,true))}
+function outline(p){const f=p.f,n=+f.s7_count||3,L=[];L.push((f.title||"제목 없음")+" · "+(f.ref||""));L.push("핵심 명제: "+(f.s5_prop||""));L.push("영광–만족: "+(f.s5_gs||""));L.push("어색한 연결: "+(f.s3_odd||""));L.push("구조: "+((STRUCT.find(s=>s[0]===f.s7_type)||[])[1]||""));for(let i=1;i<=n;i++)L.push(`${i}. ${f["d"+i+"_title"]||""} (${f["d"+i+"_ref"]||""})${+f.s7_peak===i?" ← 정점":""}`);L.push("적용 질문:\n"+(f.s10_q||""));return L.join("\n")}
+function finalHTML(p){const t=manuscript(p,false),a=analyze(p);
+  return`<div class="alloc"><span>본문 제외 원고 <b>${a.L.toLocaleString()}</b>자</span><span>예상 <b>${a.min.toFixed(1)}</b>분</span></div><div class="bar" style="margin-bottom:14px"><button class="btn primary" id="copyBtn">원고 복사</button><button class="btn" id="copyOutline">개요만 복사</button><button class="btn" id="copyNotes">연구 노트 복사</button><button class="btn" id="dlTxt">원고 .txt 저장</button><button class="btn" id="printBtn">인쇄 · PDF</button></div><div class="manuscript" id="msOut" tabindex="0">${esc(t)||'<span style="color:var(--muted)">아직 원고 칸이 비어 있습니다. 서론 4동작부터 채우세요.</span>'}</div>`}
+
+/* ================= 렌더: 작업면 ================= */
+function welcomeHTML(){return`<div class="welcome"><h3>이렇게 따라 하세요</h3><ol><li>왼쪽 <b>공정</b>을 위에서부터 하나씩 진행합니다. 점이 초록색이 되면 다음으로 넘어갑니다.</li><li>칸마다 <b>찾는 법</b>을 읽고, <b>예시</b>(마 13:44)를 본 뒤, <b>문형으로 시작</b>을 눌러 빈칸(___)을 채웁니다.</li><li>막히면 보라색 <b>AI</b> 버튼으로 원어·배경·주석·예화를 묻습니다. 결과는 칸에 덧붙이거나 연구 노트에 저장합니다.</li><li>고백 노트처럼 설교자만 쓸 수 있는 칸은 AI가 대신 쓰지 않습니다.</li></ol></div>`}
+function renderWork(){const p=cur(),i=store.step[p.id]||0,s=STEPS[i];
+  let h=`<div class="eyebrow">${esc(s.eyebrow)}</div><h2>${esc(s.title)}</h2><p class="lede">${esc(s.lede)}</p>`;
+  if(i===0&&!p.sample)h+=welcomeHTML();
+  if(s.todo)h+=`<div class="todo"><b>이 공정에서 할 일</b><ol>${s.todo.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div>`;
+  if(p.f.passage&&i>0&&i<7)h+=`<div class="passage"><b>${esc(p.f.ref||"본문")}</b>${esc(p.f.passage)}</div>`;
+  if(s.alloc==="intro")h+=allocHTML(p,[["서론 목표","intro"]]);
+  if(s.custom==="body")h+=bodyHTML(p);
+  else if(s.custom==="apply")h+=applyHTML(p);
+  else if(s.custom==="verify")h+=verifyHTML(p);
+  else if(s.custom==="final")h+=finalHTML(p);
+  else if(s.custom==="structure")h+=structureHTML(p);
+  else h+=`<div class="fields">${s.fields.map(d=>fieldHTML(p,d)).join("")}</div>`;
+  h+=resultsHTML(p,s);
+  h+=`<div class="nav-foot"><button class="btn" data-go="${i-1}" ${i===0?"disabled":""}>← 이전 공정</button>${i<STEPS.length-1?`<button class="btn primary" data-go="${i+1}">다음 공정: ${esc(STEPS[i+1].title)} →</button>`:""}</div>`;
+  $("#work").innerHTML=h;
+  if(store.side==="coach")renderSide()}
+
+/* ================= 사이드: 코치 · AI · 노트 ================= */
+let aiState={mode:null,target:"",out:"",busy:false,ctl:null,extra:""};
+let sampleFn=undefined; // undefined: 확인 중, null: 사용 불가, function: 사용 가능
+let aiBlocked=false;
+
+function renderSide(){document.querySelectorAll(".stab").forEach(b=>b.classList.toggle("on",b.dataset.side===store.side));
+  const p=cur();$("#notesTab").textContent="연구 노트"+((p.notes||[]).length?" "+p.notes.length:"");
+  if(store.side==="ai")return renderAI();if(store.side==="notes")return renderNotes();
+  const i=store.step[p.id]||0,s=STEPS[i],c=s.coach,ex=exampleFor(s.id);
+  $("#spane").innerHTML=`<div class="note"><h3>파이퍼 원리</h3><p>${esc(c.p)}</p><p class="src">${esc(c.src)}</p></div>
+  <div class="note"><h3>이 공정의 질문</h3><ul>${c.q.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+  <div class="note"><h3>흔한 함정</h3><p>${esc(c.trap)}</p></div>
+  ${ex?`<div class="note ex"><h3>예문 · 마 13:44 (창작)</h3><p>${esc(ex)}</p></div>`:""}
+  <div class="note"><h3>이 공정에서 쓸 AI</h3><div class="airow">${(STEP_AI[s.id]||[]).map(m=>`<button type="button" class="aichip" data-ai="${m}">${esc(AI[m].label)}</button>`).join("")}</div></div>
+  <div class="note"><h3>핵심 문장</h3><p style="font-family:var(--f-display)">하나님은 우리가 그분 안에서 가장 만족할 때 우리 안에서 가장 영광 받으신다.</p><p class="src">The Dangerous Duty of Delight 2장</p></div>`}
+function exampleFor(id){const S=SAMPLE;return{setup:S.ref+" · "+S.title.replace(" (예시)",""),bound:S.s1_bound,words:S.s2_conj,odd:S.s3_odd+" "+S.s3_why,flow:S.s4_flow.split("\n").slice(1,4).join(" / "),reality:S.s5_prop+" → "+S.s5_gs,savor:S.s6_note.split("\n")[0],structure:"1. "+S.d1_title+" / 2. "+S.d2_title+" (정점) / 3. "+S.d3_title,intro:S.i2,body:S.d2_m4,apply:S.s10_q.split("\n")[0],verify:"예시 원고의 약점: 분량·전달 3점. 낭독 시간을 재지 않았다.",final:S.s10_prayer,post:S.p4_soul}[id]}
+
+function currentFieldsForInsert(){const p=cur(),s=STEPS[store.step[p.id]||0],out=[];
+  if(s.fields)s.fields.forEach(d=>{if(["text","area","ms","flow","gs"].includes(d.type))out.push([d.k,d.label])});
+  if(s.id==="body"){const tab=p.bodyTab||1;MOVES.forEach((m,i)=>out.push(["d"+tab+"_m"+(i+1),"대지 "+tab+" · "+m[0]]))}
+  if(s.id==="apply")out.push(["s10_q","적용 질문"],["s10_last","마지막 질문"],["s10_grace","은혜·초청 문장"],["s10_prayer","기도"]);
+  if(s.id==="savor")return out.filter(o=>o[0]!=="s6_note");
+  return out}
+
+function aiContext(mode){const p=cur(),f=p.f,M=AI[mode]||{},L=[];
+  L.push("[본문] "+(f.ref||"(미정)"));if(f.passage)L.push("[본문 전문] "+f.passage);
+  if(f.audience)L.push("[청중] "+f.audience);
+  const add=(lab,k)=>{if(len(f[k]))L.push(`[${lab}] `+String(f[k]).slice(0,1500))};
+  if(M.full){L.push("[핵심 명제] "+(f.s5_prop||""));L.push("[원고]\n"+manuscript(p,false).slice(0,24000));return L.join("\n")}
+  add("단락 경계",'s1_bound');add("문맥 메모",'s1_context');add("관찰 · 동사",'s2_verbs');add("관찰 · 접속사",'s2_conj');
+  if(["questions","oddcands"].includes(mode))add("내가 이미 쓴 질문",'s2_q');
+  add("어색한 연결",'s3_odd');add("논리 흐름",'s4_flow');add("핵심 명제",'s5_prop');add("영광–만족 문장",'s5_gs');
+  if(mode==="commentary"||mode==="tradition")add("내 주석 대조 메모",'s6_comm');
+  if(mode==="structure")add("뼈대 동사",'s4_main');
+  if(["introfb","contact"].includes(mode)){add("통념",'s3_myth');["i1","i2","i3","i4"].forEach((k,i)=>add("서론 "+(i+1),k))}
+  if(["proof","objection","illustration","pointfb","parallels"].includes(mode)&&STEPS[store.step[p.id]||0].id==="body"){const t=p.bodyTab||1;L.push(`[현재 대지 ${t}] ${f["d"+t+"_title"]||""} (근거 ${f["d"+t+"_ref"]||"?"})`);if(mode==="pointfb")MOVES.forEach((m,i)=>add(`대지 ${t} · ${m[0]}`,"d"+t+"_m"+(i+1)))}
+  if(mode==="appq")add("결론 질문",'s10_q');
+  return L.join("\n")}
+function buildPrompt(mode,extra){const M=AI[mode];const task=mode==="free"?(extra||"(질문을 입력하세요)"):M.task+(extra?"\n추가 요청: "+extra:"");
+  return AI_RULES+"\n\n=== 설교 준비 자료 ===\n"+aiContext(mode)+"\n\n=== 요청 ===\n"+task}
+
+function inline(s){return s.replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/`(.+?)`/g,"<code>$1</code>")}
+function md(t){const s=esc(t),rows=s.split("\n"),out=[];let inList=null,inTable=false;
+  const close=()=>{if(inList){out.push(inList==="ul"?"</ul>":"</ol>");inList=null}if(inTable){out.push("</table>");inTable=false}};
+  for(const r of rows){const line=r.trimEnd();let m;
+    if(/^\s*\|.*\|\s*$/.test(line)){if(/^\s*\|[\s:\-|]+\|\s*$/.test(line))continue;if(!inTable){close();out.push("<table>");inTable=true}out.push("<tr>"+line.trim().slice(1,-1).split("|").map(c=>"<td>"+inline(c.trim())+"</td>").join("")+"</tr>");continue}
+    if(inTable){out.push("</table>");inTable=false}
+    if((m=line.match(/^#{1,4}\s+(.*)/))){close();out.push("<h4>"+inline(m[1])+"</h4>");continue}
+    if((m=line.match(/^\s*[-*•]\s+(.*)/))){if(inList!=="ul"){close();out.push("<ul>");inList="ul"}out.push("<li>"+inline(m[1])+"</li>");continue}
+    if((m=line.match(/^\s*\d+[.)]\s+(.*)/))){if(inList!=="ol"){close();out.push("<ol>");inList="ol"}out.push("<li>"+inline(m[1])+"</li>");continue}
+    if(!line.trim()){close();continue}
+    close();out.push("<p>"+inline(line)+"</p>")}
+  close();return out.join("")}
+
+function aiStatusHTML(){if(aiBlocked)return`<div class="aistatus off"><i></i><span>이 보기에서는 AI 호출이 허용되지 않았습니다. 아래 '프롬프트 복사'로 Claude 대화창에서 같은 연구를 받을 수 있습니다.</span></div>`;
+  if(sampleFn===undefined)return`<div class="aistatus"><i></i><span>Claude 연결을 확인하는 중입니다.</span></div>`;
+  if(sampleFn)return`<div class="aistatus on"><i></i><span>Claude 연결됨. 처음 한 번 사용 허용을 묻고, 사용량은 내 Claude 계정에서 차감됩니다.</span></div>`;
+  return`<div class="aistatus off"><i></i><span>이 화면에서는 AI를 직접 부를 수 없습니다(파일로 연 경우 등). '프롬프트 복사'를 누른 뒤 <a href="https://claude.ai/new" target="_blank" rel="noopener">Claude</a>에 붙여 넣으면 같은 연구를 받을 수 있습니다.</span></div>`}
+function renderAI(){const p=cur(),mode=aiState.mode,M=mode?AI[mode]:null,canRun=sampleFn&&!aiBlocked;
+  const stepModes=STEP_AI[STEPS[store.step[p.id]||0].id]||[];
+  let h=`<div class="aibox">${aiStatusHTML()}`;
+  h+=`<div><div class="modegrp">이 공정 추천</div><div class="modes">${stepModes.map(m=>`<button type="button" class="mode${m===mode?" on":""}" data-mode="${m}">${esc(AI[m].label)}</button>`).join("")}</div></div>`;
+  AI_GROUPS.forEach(g=>{h+=`<div><div class="modegrp">${g[0]}</div><div class="modes">${g[1].map(m=>`<button type="button" class="mode${m===mode?" on":""}" data-mode="${m}">${esc(AI[m].label)}</button>`).join("")}</div></div>`});
+  if(M){h+=`<div class="aidesc">${esc(M.desc)}</div>`;
+    h+=`<label for="aiExtra" style="font-size:13px;color:var(--muted)">${mode==="free"?"질문":"추가 요청(선택)"}</label><textarea id="aiExtra" rows="${mode==="free"?4:2}" placeholder="${mode==="free"?"예: 44절의 '숨겨 두고'를 윤리적으로 어떻게 설명해야 하나요?":"예: 구약 배경을 더 자세히"}">${esc(aiState.extra)}</textarea>`;
+    h+=`<details class="ctx"><summary>AI가 읽는 내용 보기</summary><pre id="ctxPre">${esc(buildPrompt(mode,aiState.extra))}</pre></details>`;
+    h+=`<div class="aiacts">${canRun?`<button class="btn aib" id="aiRun" ${aiState.busy?"disabled":""}>${aiState.busy?"연구 중…":"AI에게 묻기"}</button>`:""}${aiState.busy?`<button class="btn" id="aiStop">중지</button>`:""}<button class="btn" id="aiCopyPrompt">프롬프트 복사</button></div>`}
+  else h+=`<div class="aidesc">위에서 연구할 항목을 고르세요. 작업면의 보라색 AI 버튼을 누르면 그 칸에 맞는 항목이 바로 실행됩니다.</div>`;
+  h+=`<div class="aiout" id="aiOut" aria-live="polite">${aiState.busy&&!aiState.out?'<p class="thinking">자료를 살펴보는 중입니다. 길게는 1분 정도 걸립니다.</p>':md(aiState.out)}</div>`;
+  if(aiState.out&&!aiState.busy){const opts=currentFieldsForInsert();const tgt=aiState.target||(M&&M.target)||"";
+    h+=`<div class="aiacts"><button class="btn sm" id="aiSave">연구 노트에 저장</button><button class="btn sm" id="aiCopy">결과 복사</button>${opts.length?`<select id="aiTarget" aria-label="붙일 칸">${opts.map(o=>`<option value="${o[0]}"${o[0]===tgt?" selected":""}>${esc(o[1])}</option>`).join("")}</select><button class="btn sm" id="aiInsert">이 칸에 덧붙이기</button>`:""}</div>`;
+    h+=`<p class="caution">AI 결과는 연구의 출발점입니다. 원어 형태, 장절, 책 이름은 원문 성경과 사전으로 반드시 확인하고, 내 말로 다시 쓰세요.</p>`}
+  h+=`</div>`;$("#spane").innerHTML=h}
+function renderNotes(){const p=cur(),N=p.notes||[];
+  $("#spane").innerHTML=N.length?N.map((n,i)=>`<div class="rnote"><div class="hd"><span><b>${esc(n.label)}</b> · ${esc(n.step)}</span><span>${esc(n.date)} <button class="btn sm ghost" data-delnote="${i}">삭제</button></span></div><div class="body">${md(n.text)}</div></div>`).join(""):`<div class="note"><h3>연구 노트</h3><p>AI 연구실에서 받은 결과를 '연구 노트에 저장'하면 여기에 쌓입니다. 원어 분석, 배경사, 주석 안내를 설교마다 모아 둘 수 있습니다.</p></div>`}
+
+function openAI(mode,target){store.side="ai";aiState.mode=mode;aiState.target=target||"";aiState.out="";aiState.extra="";save();renderSide();
+  const side=$("#side");if(side&&side.scrollIntoView&&innerWidth<1240)side.scrollIntoView({behavior:"smooth",block:"start"});
+  if(sampleFn&&!aiBlocked&&mode!=="free")runAI()}
+async function runAI(){if(!sampleFn||aiState.busy||!aiState.mode)return;const mode=aiState.mode;const prompt=buildPrompt(mode,aiState.extra);
+  if(mode==="free"&&!aiState.extra.trim()){toast("질문을 먼저 입력하세요");return}
+  aiState.busy=true;aiState.out="";aiState.ctl=new AbortController();renderAI();
+  const opts={signal:aiState.ctl.signal,modelTier:["commentary","tradition","rubricai","pointfb","propcheck","structure"].includes(mode)?"complex":"default",onText:({text})=>{aiState.out=text;const o=$("#aiOut");if(o)o.innerHTML=md(text)}};
+  if(mode==="free")opts.cache=false;
+  try{const r=await sampleFn(prompt,opts);aiState.out=r.text;if(r.truncated)toast("답이 길어 중간에 끊겼습니다. 추가 요청으로 범위를 좁혀 보세요")}
+  catch(e){const c=e&&e.code;aiState.out=(e&&e.text)||"";
+    if(["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(c)){aiBlocked=true;toast("AI 사용이 허용되지 않았습니다. 프롬프트 복사를 이용하세요")}
+    else if(c==="rate_limited")toast("요청이 많습니다. 잠시 뒤 다시 눌러 주세요");
+    else if(c==="refused"){aiState.out="";toast("이 요청에는 답하지 않았습니다. 질문을 바꿔 보세요")}
+    else if(c==="prompt_too_large")toast("자료가 너무 깁니다. 원고 일부로 다시 시도하세요");
+    else if(c==="session_expired")toast("Claude에 다시 로그인해 주세요");
+    else if(c!=="cancelled")toast("연결이 끊겼습니다. 다시 눌러 주세요")}
+  finally{aiState.busy=false;aiState.ctl=null;if(store.side==="ai")renderAI()}}
+
+/* ================= 부분 갱신 ================= */
+function refreshPartial(){const p=cur(),s=STEPS[store.step[p.id]||0];const r=$("#results");if(r){const tmp=document.createElement("div");tmp.innerHTML=resultsHTML(p,s);r.replaceWith(tmp.firstElementChild)}renderRail();renderProjects()}
+function renderAll(){renderProjects();renderRail();renderWork();renderSide()}
+function setField(k,val,append){const p=cur();const old=p.f[k]||"";p.f[k]=append&&String(old).trim()?String(old).trimEnd()+"\n"+val:val;save();
+  const el=$("#f_"+k);if(el){el.value=p.f[k];el.dispatchEvent(new Event("input",{bubbles:true}))}else renderWork()}
+function allFields(){const out=[];STEPS.forEach(s=>(s.fields||[]).forEach(d=>out.push(d)));out.push(EXTRA.s10_q,EXTRA.s10_last,EXTRA.s10_grace);return out}
+function focusField(k){const el=$("#f_"+k);if(!el)return;el.focus();const i=el.value.indexOf("___");if(i>=0&&el.setSelectionRange)el.setSelectionRange(i,i+3)}
+
+/* ================= 이벤트 ================= */
+document.addEventListener("input",e=>{const el=e.target;
+  if(el.id==="aiExtra"){aiState.extra=el.value;const pre=$("#ctxPre");if(pre)pre.textContent=buildPrompt(aiState.mode,aiState.extra);return}
+  const k=el.dataset.k;if(!k)return;const p=cur();p.f[k]=el.value;save();
+  const c=document.querySelector(`[data-cnt="${k}"]`);if(c){const g=el.dataset.goal;c.textContent=el.type==="range"?el.value:(g?`${len(el.value)} / ${g}자`:`${len(el.value)}자`);if(g)c.classList.toggle("over",len(el.value)>g*1.25)}
+  if(k.startsWith("mx_"))el.closest("td").classList.toggle("filled",len(el.value)>3);
+  const bt=$("#bodyTot");if(bt&&/^d\d_m\d$/.test(k)){const tab=k[1];bt.textContent=[1,2,3,4,5,6].reduce((a,m)=>a+len(p.f["d"+tab+"_m"+m]),0)}
+  refreshPartial()});
+document.addEventListener("change",e=>{const el=e.target;
+  if(el.dataset.arr){const p=cur(),k=el.dataset.arr,a=new Set(p.f[k]||[]);el.checked?a.add(el.value):a.delete(el.value);p.f[k]=[...a];save();refreshPartial()}
+  if(el.dataset.k==="s7_count"||el.dataset.k==="minutes")renderWork();
+  if(el.id==="projSel"){store.current=el.value;aiState.out="";save();renderAll()}
+  if(el.id==="guideToggle"){store.guide=el.checked;save();renderWork()}
+  if(el.id==="aiTarget")aiState.target=el.value});
+document.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const p=cur();
+  if(b.dataset.go!==undefined){const i=+b.dataset.go;if(i<0||i>=STEPS.length)return;store.step[p.id]=i;save();renderRail();renderWork();if(store.side!=="coach")renderSide();const wk=$("#work");wk.scrollIntoView&&wk.scrollIntoView({block:"start",behavior:"smooth"});return}
+  if(b.dataset.side){store.side=b.dataset.side;save();renderSide();return}
+  if(b.dataset.ai){openAI(b.dataset.ai,b.dataset.aitarget);return}
+  if(b.dataset.mode){aiState.mode=b.dataset.mode;aiState.out="";aiState.target="";aiState.extra="";renderAI();return}
+  if(b.dataset.tpl){const d=allFields().find(x=>x.k===b.dataset.tpl);if(!d||!d.tpl)return;setField(d.k,d.tpl.replace("{ref}",p.f.ref||"이 본문"),true);focusField(d.k);return}
+  if(b.dataset.tplraw){setField(b.dataset.tplraw,b.dataset.raw,true);focusField(b.dataset.tplraw);return}
+  if(b.dataset.copyex){setField(b.dataset.copyex,exOf(b.dataset.copyex),false);toast("예시를 칸에 넣었습니다. 내 본문에 맞게 고쳐 쓰세요");return}
+  if(b.dataset.chip){const k=b.dataset.chip,a=new Set(p.f[k]||[]);a.has(b.dataset.v)?a.delete(b.dataset.v):a.add(b.dataset.v);p.f[k]=[...a];save();renderWork();renderRail();return}
+  if(b.dataset.card){p.f[b.dataset.card]=b.dataset.v;save();renderWork();renderRail();return}
+  if(b.dataset.tab){p.bodyTab=+b.dataset.tab;save();renderWork();return}
+  if(b.dataset.rb){p.f["rb"+b.dataset.rb]=+b.dataset.v;save();renderWork();renderRail();return}
+  if(b.dataset.ins){const ta=$("#f_"+b.dataset.ins);const pos=ta.selectionStart??ta.value.length;ta.value=ta.value.slice(0,pos)+b.dataset.v+ta.value.slice(pos);ta.focus();ta.dispatchEvent(new Event("input",{bubbles:true}));return}
+  if(b.dataset.copyprop){setField("s10_concl",p.f.s5_prop||"",false);return}
+  if(b.dataset.pray){const prop=p.f.s5_prop||"(핵심 명제)";setField("s10_prayer",`아버지, 오늘 ${p.f.ref||"이 말씀"}을 통해 '${prop}'는 진리를 보게 하셨습니다. 우리가 너무 쉽게 만족해 온 것들을 고백합니다. 이 진리를 맛보게 하시고, 우리의 만족이 주의 영광을 크게 드러내게 하소서. 예수 그리스도의 이름으로 기도합니다. 아멘.`,false);return}
+  if(b.dataset.delnote!==undefined){p.notes.splice(+b.dataset.delnote,1);save();renderSide();return}
+  if(b.id==="aiRun"){runAI();return}
+  if(b.id==="aiStop"){aiState.ctl&&aiState.ctl.abort();return}
+  if(b.id==="aiCopyPrompt"){copy(buildPrompt(aiState.mode,aiState.extra),"프롬프트를 복사했습니다. Claude 대화창에 붙여 넣으세요");return}
+  if(b.id==="aiCopy"){copy(aiState.out,"결과를 복사했습니다");return}
+  if(b.id==="aiSave"){p.notes=p.notes||[];const d=new Date();p.notes.unshift({label:AI[aiState.mode].label,step:STEPS[store.step[p.id]||0].title,date:`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`,text:aiState.out});save();renderSide();toast("연구 노트에 저장했습니다");return}
+  if(b.id==="aiInsert"){const k=$("#aiTarget").value;const M=AI[aiState.mode];let t=aiState.out;if(M.plain)t=lines(t).map(x=>x.replace(/^\s*(?:[-*•]|\d+[.)])\s*/,"")).join("\n");setField(k,t,true);toast("칸에 덧붙였습니다. 내 말로 다듬으세요");return}
+  if(b.id==="dlTxt"){download((p.f.title||"설교원고").replace(/[\\/:*?"<>|]/g,"_")+".txt",manuscript(p,false)+((p.notes||[]).length?"\n\n\n=== 연구 노트 ===\n\n"+(p.notes||[]).map(n=>`[${n.label} · ${n.step}]\n${n.text}`).join("\n\n———\n\n"):""),"text/plain");return}
+  if(b.id==="printBtn"){window.print();return}
+  if(b.id==="copyBtn"||b.id==="copyOutline"){copy(b.id==="copyBtn"?manuscript(p,false):outline(p),b.id==="copyBtn"?"원고를 복사했습니다":"개요를 복사했습니다");return}
+  if(b.id==="copyNotes"){const N=p.notes||[];if(!N.length){toast("연구 노트가 비어 있습니다");return}copy(N.map(n=>`[${n.label} · ${n.step}]\n${n.text}`).join("\n\n———\n\n"),"연구 노트를 복사했습니다");return}
+});
+function copy(t,msg){try{navigator.clipboard.writeText(t).then(()=>toast(msg),fallback)}catch(e){fallback()}
+  function fallback(){const ms=$("#msOut")||$("#aiOut");if(ms){const r=document.createRange();r.selectNodeContents(ms);const s=getSelection();s.removeAllRanges();s.addRange(r)}toast("복사가 막혀 내용을 선택해 두었습니다. Ctrl+C로 복사하세요")}}
+function download(name,text,type){const blob=new Blob([text],{type:type+";charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast(name+" 저장")}
+let tT;function toast(m){let t=$(".toast");if(!t){t=document.createElement("div");t.className="toast";t.setAttribute("role","status");document.body.appendChild(t)}t.textContent=m;t.hidden=false;clearTimeout(tT);tT=setTimeout(()=>t.hidden=true,2800)}
+
+$("#newBtn").onclick=()=>{newProject();aiState.out="";renderAll();toast("새 설교를 시작했습니다. 공정 0부터 따라오세요")};
+$("#sampleBtn").onclick=()=>{const ex=store.order.find(id=>store.projects[id].sample);if(ex)store.current=ex;else{const id=newProject(JSON.parse(JSON.stringify(SAMPLE)));store.projects[id].sample=true}aiState.out="";save();renderAll();toast("마 13:44 예시를 열었습니다 · 원고는 골격 분량입니다")};
+$("#delBtn").onclick=()=>{const p=cur();$("#confirmZone").innerHTML=`<div class="confirm" style="margin-top:10px"><span>'${esc(p.f.title||"제목 없음")}'을(를) 삭제할까요? 되돌릴 수 없습니다.</span><button class="btn sm" id="delYes">삭제</button><button class="btn sm" id="delNo">취소</button></div>`;
+  $("#delNo").onclick=()=>$("#confirmZone").innerHTML="";
+  $("#delYes").onclick=()=>{delete store.projects[p.id];store.order=store.order.filter(x=>x!==p.id);if(!store.order.length)newProject();store.current=store.order[0];save();$("#confirmZone").innerHTML="";renderAll();toast("삭제했습니다")}};
+$("#patBtn").onclick=()=>{$("#patBody").innerHTML=PATTERNS.map((x,i)=>`<div class="pat"><h4><em>${String(i+1).padStart(2,"0")}</em>${esc(x[0])}</h4><p>${esc(x[1])}</p><blockquote>${esc(x[2])}</blockquote></div>`).join("")+`<p style="font-family:var(--f-mono);font-size:11px;color:var(--muted);margin-top:12px">원리 설명은 존 파이퍼 저서 6권에서 추출해 풀어 쓴 것이고, 인용 블록의 예문은 모두 창작입니다.</p>`;$("#patDlg").showModal()};
+$("#backupBtn").onclick=()=>{const d=new Date(),ds=d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0");download("파이퍼설교연구_백업_"+ds+".json",JSON.stringify(store,null,1),"application/json")};
+$("#restoreIn").onchange=e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{try{const s=JSON.parse(r.result);if(!s.projects||!s.order)throw 0;let n=0;s.order.forEach(id=>{if(s.projects[id]){let nid=id;if(store.projects[nid])nid=uid();store.projects[nid]=Object.assign(s.projects[id],{id:nid});if(!store.projects[nid].notes)store.projects[nid].notes=[];store.order.unshift(nid);store.step[nid]=(s.step&&s.step[id])||0;n++}});store.current=store.order[0];save();renderAll();toast(n+"편을 복원했습니다")}catch(err){toast("백업 파일 형식이 아닙니다. 이 프로그램에서 만든 .json 파일을 고르세요")}e.target.value=""};r.readAsText(file,"utf-8")};
+$("#patClose").onclick=()=>$("#patDlg").close();
+
+/* ================= 시작 ================= */
+load();
+if(!store.order.length){const sid=newProject(JSON.parse(JSON.stringify(SAMPLE)));store.projects[sid].sample=true;const id=newProject();store.current=id;save()}
+if(!store.projects[store.current])store.current=store.order[0];
+store.order.forEach(id=>{if(!store.projects[id].notes)store.projects[id].notes=[]});
+if(!["coach","ai","notes"].includes(store.side))store.side="coach";
+$("#guideToggle").checked=store.guide!==false;
+renderAll();
+(async()=>{try{if(window.claude&&typeof window.claude.use==="function")sampleFn=await window.claude.use("sample");else sampleFn=null}catch(e){sampleFn=null}if(store.side==="ai")renderAI()})();
+})();
+</script>
+</body>
+</html>
